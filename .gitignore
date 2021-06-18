@@ -57,7 +57,7 @@ captures/
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
-.cxx/
+.cxx
 
 # Google Services (e.g. APIs or Firebase)
 # google-services.json
@@ -83,3 +83,5 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+.DS_Store
