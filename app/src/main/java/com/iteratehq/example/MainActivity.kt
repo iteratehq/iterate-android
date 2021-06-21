@@ -1,4 +1,4 @@
-package com.iterathq.example
+package com.iteratehq.example
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
