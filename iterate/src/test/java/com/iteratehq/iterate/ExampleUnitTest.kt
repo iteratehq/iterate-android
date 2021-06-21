@@ -1,4 +1,4 @@
-package com.iterathq.iterate
+package com.iteratehq.iterate
 
 import org.junit.Test
 
