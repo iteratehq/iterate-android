@@ -1,4 +1,4 @@
-package com.iterathq.example
+package com.iteratehq.example
 
 import org.junit.Test
 

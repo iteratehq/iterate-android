@@ -8,7 +8,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.iterathq.example"
+        applicationId "com.iteratehq.example"
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 1
