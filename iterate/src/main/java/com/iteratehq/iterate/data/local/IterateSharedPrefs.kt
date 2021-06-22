@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.model.UserTraits
 
 internal interface IterateSharedPrefs {
-    fun getLastUpdated(): Long
+    fun getLastUpdated(): Long?
     fun getUserTraits(): MutableMap<String, Any>?
     fun setLastUpdated(lastUpdated: Long)
     fun setUserTraits(userTraits: UserTraits)
@@ -21,8 +21,12 @@ internal class IterateSharedPrefsImpl(
         context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
     }
 
-    override fun getLastUpdated(): Long {
-        return prefs.getLong(LAST_UPDATED, 0)
+    override fun getLastUpdated(): Long? {
+        return if (prefs.contains(LAST_UPDATED)) {
+            prefs.getLong(LAST_UPDATED, -1)
+        } else {
+            null
+        }
     }
 
     override fun getUserTraits(): MutableMap<String, Any>? {
