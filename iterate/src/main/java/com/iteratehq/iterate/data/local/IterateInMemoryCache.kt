@@ -7,7 +7,7 @@ internal interface IterateInMemoryCache {
     fun setPreviewSurveyId(previewSurveyId: String)
 }
 
-internal object IterateInMemoryCacheImpl : IterateInMemoryCache {
+internal class IterateInMemoryCacheImpl : IterateInMemoryCache {
     private var companyAuthToken: String? = null
     private var previewSurveyId: String? = null
 
