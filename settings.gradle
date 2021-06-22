@@ -1,0 +1,3 @@
+rootProject.name = "Iterate Example"
+include ':app'
+include ':iterate'
