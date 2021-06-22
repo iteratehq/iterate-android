@@ -13,7 +13,7 @@ internal interface IterateRepository {
     fun setCompanyAuthToken(companyAuthToken: String)
     fun setLastUpdated(lastUpdated: Long)
     fun setPreviewSurveyId(previewSurveyId: String)
-    fun setUserAuthToken(authToken: String)
+    fun setUserAuthToken(userAuthToken: String)
     fun setUserTraits(userTraits: UserTraits)
 }
 
