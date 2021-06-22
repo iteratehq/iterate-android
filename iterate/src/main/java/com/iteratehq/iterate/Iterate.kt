@@ -73,7 +73,7 @@ object Iterate {
         val embedContext = EmbedContext(
             app = AppContext(
                 version = "1.0.0", // TODO: get from BuildConfig
-                urlScheme = null
+                urlScheme = null   // TODO: add urlScheme for deep link
             ),
             event = EventContext(eventName),
             type = EmbedType.MOBILE,
