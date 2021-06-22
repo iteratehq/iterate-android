@@ -12,7 +12,7 @@ internal class IterateDI(context: Context) {
     private val iterateInMemoryCache: IterateInMemoryCache = IterateInMemoryCacheImpl()
     private val iterateSharedPrefs: IterateSharedPrefs = IterateSharedPrefsImpl(context)
 
-    // iterateRepository is not private; it'll be exposed
+    @JvmSynthetic
     internal val iterateRepository: IterateRepository = IterateRepositoryImpl(
         iterateInMemoryCache,
         iterateSharedPrefs
