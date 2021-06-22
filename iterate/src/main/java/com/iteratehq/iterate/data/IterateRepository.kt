@@ -54,8 +54,8 @@ internal class IterateRepositoryImpl(
         iterateInMemoryCache.setPreviewSurveyId(previewSurveyId)
     }
 
-    override fun setUserAuthToken(authToken: String) {
-        iterateSharedPrefs.setUserAuthToken(authToken)
+    override fun setUserAuthToken(userAuthToken: String) {
+        iterateSharedPrefs.setUserAuthToken(userAuthToken)
     }
 
     override fun setUserTraits(userTraits: UserTraits) {
