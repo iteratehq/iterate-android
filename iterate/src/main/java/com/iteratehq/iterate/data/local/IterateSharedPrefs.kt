@@ -7,10 +7,10 @@ import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.model.UserTraits
 
 internal interface IterateSharedPrefs {
-    fun getAuthToken(): String?
+    fun getUserAuthToken(): String?
     fun getLastUpdated(): Long?
     fun getUserTraits(): MutableMap<String, Any>?
-    fun setAuthToken(authToken: String)
+    fun setUserAuthToken(userAuthToken: String)
     fun setLastUpdated(lastUpdated: Long)
     fun setUserTraits(userTraits: UserTraits)
 }
@@ -23,8 +23,8 @@ internal class IterateSharedPrefsImpl(
         context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
     }
 
-    override fun getAuthToken(): String? {
-        return prefs.getString(AUTH_TOKEN, null)
+    override fun getUserAuthToken(): String? {
+        return prefs.getString(USER_AUTH_TOKEN, null)
     }
 
     override fun getLastUpdated(): Long? {
@@ -41,9 +41,9 @@ internal class IterateSharedPrefsImpl(
         return Gson().fromJson(userTraitsJson, type)
     }
 
-    override fun setAuthToken(authToken: String) {
+    override fun setUserAuthToken(userAuthToken: String) {
         prefs.edit()
-            .putString(AUTH_TOKEN, authToken)
+            .putString(USER_AUTH_TOKEN, userAuthToken)
             .apply()
     }
 
@@ -62,7 +62,7 @@ internal class IterateSharedPrefsImpl(
 
     private companion object {
         private const val PREF_FILE = "IterateSharedPrefs"
-        private const val AUTH_TOKEN = "AUTH_TOKEN"
+        private const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         private const val LAST_UPDATED = "LAST_UPDATED"
         private const val USER_TRAITS = "USER_TRAITS"
     }
