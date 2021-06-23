@@ -26,13 +26,21 @@ object Iterate {
     @JvmStatic
     fun init(context: Context, apiKey: String) {
         iterateRepository = DefaultIterateRepository(context.applicationContext)
-        // TODO: initIdentify
         // TODO: initSendEvent
     }
 
+    /**
+     * TODO: add explanation
+     *
+     * @throws IllegalStateException TODO: add explanation
+     */
+    @Throws(IllegalStateException::class)
     @JvmStatic
     fun identify(userTraits: UserTraits) {
-        // TODO: Save userTraits into storage using repository
+        if (!::iterateRepository.isInitialized) {
+            throw IllegalStateException("Error calling Iterate.identify(). Make sure you call Iterate.init() before calling identify, see README for details")
+        }
+        iterateRepository.setUserTraits(userTraits)
     }
 
     /**
@@ -41,17 +49,29 @@ object Iterate {
      */
     @JvmStatic
     fun reset() {
-        // TODO: clear storage and all caches, except the companyAuthToken
         // Only clear the storage if it has been initialized. This allows the reset
-        // method to be called before Init, giving consumers of the SDK more flexibility.
+        // method to be called before Init, giving consumers of the SDK more flexibility
+        if (::iterateRepository.isInitialized) {
+            // Clear the storage and all caches, except for the companyAuthToken
+            iterateRepository.clearExceptCompanyAuthToken()
 
-        // TODO: set the company API key as the token
-        // Reset the api client to the company API key
+            // TODO: set the company API key as the token
+            // Reset the api client to the company API key
+        }
     }
 
+    /**
+     * TODO: add explanation
+     *
+     * @throws IllegalStateException TODO: add explanation
+     */
+    @Throws(IllegalStateException::class)
     @JvmStatic
     fun preview(surveyId: String) {
-        // TODO: store the surveyId inside IterateRepository (in-memory cache only)
+        if (!::iterateRepository.isInitialized) {
+            throw IllegalStateException("Error calling Iterate.preview(). Make sure you call Iterate.init() before calling preview, see README for details")
+        }
+        iterateRepository.setPreviewSurveyId(surveyId)
     }
 
     @JvmStatic

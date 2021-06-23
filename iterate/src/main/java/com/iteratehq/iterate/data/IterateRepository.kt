@@ -8,6 +8,7 @@ import com.iteratehq.iterate.data.local.IterateSharedPrefs
 import com.iteratehq.iterate.model.UserTraits
 
 internal interface IterateRepository {
+    fun clearExceptCompanyAuthToken()
     fun getCompanyAuthToken(): String?
     fun getLastUpdated(): Long?
     fun getPreviewSurveyId(): String?
@@ -25,6 +26,13 @@ internal class DefaultIterateRepository @JvmOverloads internal constructor(
     private val iterateInMemoryStore: IterateInMemoryStore = DefaultIterateInMemoryStore(),
     private val iterateSharedPrefs: IterateSharedPrefs = DefaultIterateSharedPrefs(context.applicationContext),
 ) : IterateRepository {
+
+    override fun clearExceptCompanyAuthToken() {
+        val companyAuthToken = iterateInMemoryStore.getCompanyAuthToken()
+        iterateInMemoryStore.clear()
+        iterateSharedPrefs.clear()
+        companyAuthToken?.let { iterateInMemoryStore.setCompanyAuthToken(it) }
+    }
 
     override fun getCompanyAuthToken(): String? {
         return iterateInMemoryStore.getCompanyAuthToken()

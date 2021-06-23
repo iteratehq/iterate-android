@@ -1,6 +1,7 @@
 package com.iteratehq.iterate.data.local
 
 internal interface IterateInMemoryStore {
+    fun clear()
     fun getCompanyAuthToken(): String?
     fun getPreviewSurveyId(): String?
     fun setCompanyAuthToken(companyAuthToken: String)
@@ -10,6 +11,11 @@ internal interface IterateInMemoryStore {
 internal class DefaultIterateInMemoryStore : IterateInMemoryStore {
     private var companyAuthToken: String? = null
     private var previewSurveyId: String? = null
+
+    override fun clear() {
+        companyAuthToken = null
+        previewSurveyId = null
+    }
 
     override fun getCompanyAuthToken(): String? {
         return companyAuthToken
