@@ -1,13 +1,13 @@
 package com.iteratehq.iterate.data.local
 
-internal interface IterateInMemoryCache {
+internal interface IterateInMemoryStore {
     fun getCompanyAuthToken(): String?
     fun getPreviewSurveyId(): String?
     fun setCompanyAuthToken(companyAuthToken: String)
     fun setPreviewSurveyId(previewSurveyId: String)
 }
 
-internal object IterateInMemoryCacheImpl : IterateInMemoryCache {
+internal class DefaultIterateInMemoryStore : IterateInMemoryStore {
     private var companyAuthToken: String? = null
     private var previewSurveyId: String? = null
 

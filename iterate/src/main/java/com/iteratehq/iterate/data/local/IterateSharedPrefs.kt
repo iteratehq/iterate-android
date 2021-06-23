@@ -15,7 +15,7 @@ internal interface IterateSharedPrefs {
     fun setUserTraits(userTraits: UserTraits)
 }
 
-internal class IterateSharedPrefsImpl(
+internal class DefaultIterateSharedPrefs(
     private val context: Context
 ) : IterateSharedPrefs {
 

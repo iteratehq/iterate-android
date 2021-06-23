@@ -1,6 +1,8 @@
 package com.iteratehq.iterate
 
 import android.content.Context
+import com.iteratehq.iterate.data.DefaultIterateRepository
+import com.iteratehq.iterate.data.IterateRepository
 import com.iteratehq.iterate.model.AppContext
 import com.iteratehq.iterate.model.EmbedContext
 import com.iteratehq.iterate.model.EmbedType
@@ -13,14 +15,17 @@ import com.iteratehq.iterate.model.TrackingContext
 import com.iteratehq.iterate.model.UserTraits
 
 object Iterate {
+    private lateinit var iterateRepository: IterateRepository
+
     /**
      * Minimal initialization that is expected to be called on app boot.
      *
-     * @param context application context
+     * @param context Activity or application context
      * @param apiKey Iterate API key
      */
     @JvmStatic
     fun init(context: Context, apiKey: String) {
+        iterateRepository = DefaultIterateRepository(context.applicationContext)
         // TODO: initIdentify
         // TODO: initSendEvent
     }
@@ -28,7 +33,7 @@ object Iterate {
     @JvmStatic
     fun identify(userTraits: UserTraits) {
         // TODO: Save userTraits into storage using repository
-    };
+    }
 
     /**
      * Reset all stored user data. Commonly called on logout so apps can support multiple user
@@ -42,25 +47,25 @@ object Iterate {
 
         // TODO: set the company API key as the token
         // Reset the api client to the company API key
-    };
+    }
 
     @JvmStatic
     fun preview(surveyId: String) {
-        // TODO: store the surveyId inside ConfigRepository (in-memory cache only)
-    };
+        // TODO: store the surveyId inside IterateRepository (in-memory cache only)
+    }
 
     @JvmStatic
     fun sendEvent(eventName: String, eventTraits: EventTraits?) {
-        // TODO: get userTraits from ConfigRepository
+        // TODO: get userTraits from IterateRepository
         // Embed context user traits
         val userTraits = null
 
-        // TODO: get lastUpdated from ConfigRepository
+        // TODO: get lastUpdated from IterateRepository
         // Embed context last updated
         val lastUpdated = null
         val tracking = TrackingContext(lastUpdated)
 
-        // TODO: get previewSurveyId from ConfigRepository
+        // TODO: get previewSurveyId from IterateRepository
         // Embed context preview mode
         val previewSurveyId = null
         val targeting = if (previewSurveyId != null) {
@@ -83,7 +88,7 @@ object Iterate {
         )
 
         // TODO: call embed API
-    };
+    }
 
     @JvmSynthetic
     internal fun dispatchShowSurveyOrPrompt(survey: Survey, responseId: Int) {
