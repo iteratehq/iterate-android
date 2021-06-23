@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.model.UserTraits
 
 internal interface IterateSharedPrefs {
+    fun clear()
     fun getLastUpdated(): Long?
     fun getUserAuthToken(): String?
     fun getUserTraits(): UserTraits?
@@ -15,12 +16,18 @@ internal interface IterateSharedPrefs {
     fun setUserTraits(userTraits: UserTraits)
 }
 
-internal class IterateSharedPrefsImpl(
+internal class DefaultIterateSharedPrefs(
     private val context: Context
 ) : IterateSharedPrefs {
 
     private val prefs: SharedPreferences by lazy {
         context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+    }
+
+    override fun clear() {
+        prefs.edit()
+            .clear()
+            .apply()
     }
 
     override fun getLastUpdated(): Long? {

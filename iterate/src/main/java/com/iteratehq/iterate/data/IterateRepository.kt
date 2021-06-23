@@ -1,10 +1,14 @@
 package com.iteratehq.iterate.data
 
-import com.iteratehq.iterate.data.local.IterateInMemoryCache
+import android.content.Context
+import com.iteratehq.iterate.data.local.DefaultIterateInMemoryStore
+import com.iteratehq.iterate.data.local.DefaultIterateSharedPrefs
+import com.iteratehq.iterate.data.local.IterateInMemoryStore
 import com.iteratehq.iterate.data.local.IterateSharedPrefs
 import com.iteratehq.iterate.model.UserTraits
 
 internal interface IterateRepository {
+    fun clearExceptCompanyAuthToken()
     fun getCompanyAuthToken(): String?
     fun getLastUpdated(): Long?
     fun getPreviewSurveyId(): String?
@@ -17,13 +21,21 @@ internal interface IterateRepository {
     fun setUserTraits(userTraits: UserTraits)
 }
 
-internal class IterateRepositoryImpl(
-    private val iterateInMemoryCache: IterateInMemoryCache,
-    private val iterateSharedPrefs: IterateSharedPrefs,
+internal class DefaultIterateRepository @JvmOverloads internal constructor(
+    context: Context,
+    private val iterateInMemoryStore: IterateInMemoryStore = DefaultIterateInMemoryStore(),
+    private val iterateSharedPrefs: IterateSharedPrefs = DefaultIterateSharedPrefs(context.applicationContext),
 ) : IterateRepository {
 
+    override fun clearExceptCompanyAuthToken() {
+        val companyAuthToken = iterateInMemoryStore.getCompanyAuthToken()
+        iterateInMemoryStore.clear()
+        iterateSharedPrefs.clear()
+        companyAuthToken?.let { iterateInMemoryStore.setCompanyAuthToken(it) }
+    }
+
     override fun getCompanyAuthToken(): String? {
-        return iterateInMemoryCache.getCompanyAuthToken()
+        return iterateInMemoryStore.getCompanyAuthToken()
     }
 
     override fun getLastUpdated(): Long? {
@@ -31,7 +43,7 @@ internal class IterateRepositoryImpl(
     }
 
     override fun getPreviewSurveyId(): String? {
-        return iterateInMemoryCache.getPreviewSurveyId()
+        return iterateInMemoryStore.getPreviewSurveyId()
     }
 
     override fun getUserAuthToken(): String? {
@@ -43,7 +55,7 @@ internal class IterateRepositoryImpl(
     }
 
     override fun setCompanyAuthToken(companyAuthToken: String) {
-        iterateInMemoryCache.setCompanyAuthToken(companyAuthToken)
+        iterateInMemoryStore.setCompanyAuthToken(companyAuthToken)
     }
 
     override fun setLastUpdated(lastUpdated: Long) {
@@ -51,7 +63,7 @@ internal class IterateRepositoryImpl(
     }
 
     override fun setPreviewSurveyId(previewSurveyId: String) {
-        iterateInMemoryCache.setPreviewSurveyId(previewSurveyId)
+        iterateInMemoryStore.setPreviewSurveyId(previewSurveyId)
     }
 
     override fun setUserAuthToken(userAuthToken: String) {
