@@ -29,6 +29,12 @@ object Iterate {
         // TODO: initSendEvent
     }
 
+    /**
+     * TODO: add explanation
+     *
+     * @throws IllegalStateException TODO: add explanation
+     */
+    @Throws(IllegalStateException::class)
     @JvmStatic
     fun identify(userTraits: UserTraits) {
         if (!::iterateRepository.isInitialized) {
@@ -54,6 +60,12 @@ object Iterate {
         }
     }
 
+    /**
+     * TODO: add explanation
+     *
+     * @throws IllegalStateException TODO: add explanation
+     */
+    @Throws(IllegalStateException::class)
     @JvmStatic
     fun preview(surveyId: String) {
         if (!::iterateRepository.isInitialized) {
