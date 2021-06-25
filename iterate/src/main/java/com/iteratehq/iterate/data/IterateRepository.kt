@@ -5,9 +5,22 @@ import com.iteratehq.iterate.data.local.DefaultIterateInMemoryStore
 import com.iteratehq.iterate.data.local.DefaultIterateSharedPrefs
 import com.iteratehq.iterate.data.local.IterateInMemoryStore
 import com.iteratehq.iterate.data.local.IterateSharedPrefs
+import com.iteratehq.iterate.data.remote.ApiResponseCallback
+import com.iteratehq.iterate.data.remote.DefaultIterateApi
+import com.iteratehq.iterate.data.remote.IterateApi
+import com.iteratehq.iterate.model.EmbedContext
+import com.iteratehq.iterate.model.EmbedResults
+import com.iteratehq.iterate.model.Survey
 import com.iteratehq.iterate.model.UserTraits
 
 internal interface IterateRepository {
+    fun embed(
+        embedContext: EmbedContext,
+        callback: ApiResponseCallback<EmbedResults>?
+    )
+    fun displayed(survey: Survey)
+    fun dismissed(survey: Survey)
+    fun setApiKey(apiKey: String)
     fun clearExceptCompanyAuthToken()
     fun getCompanyAuthToken(): String?
     fun getLastUpdated(): Long?
@@ -23,9 +36,27 @@ internal interface IterateRepository {
 
 internal class DefaultIterateRepository @JvmOverloads internal constructor(
     context: Context,
+    apiKey: String,
+    private var iterateAPi: IterateApi = DefaultIterateApi(apiKey),
     private val iterateInMemoryStore: IterateInMemoryStore = DefaultIterateInMemoryStore(),
     private val iterateSharedPrefs: IterateSharedPrefs = DefaultIterateSharedPrefs(context.applicationContext),
 ) : IterateRepository {
+
+    override fun embed(embedContext: EmbedContext, callback: ApiResponseCallback<EmbedResults>?) {
+        iterateAPi.embed(embedContext, callback)
+    }
+
+    override fun displayed(survey: Survey) {
+        iterateAPi.displayed(survey)
+    }
+
+    override fun dismissed(survey: Survey) {
+        iterateAPi.dismissed(survey)
+    }
+
+    override fun setApiKey(apiKey: String) {
+        iterateAPi = DefaultIterateApi(apiKey)
+    }
 
     override fun clearExceptCompanyAuthToken() {
         val companyAuthToken = iterateInMemoryStore.getCompanyAuthToken()

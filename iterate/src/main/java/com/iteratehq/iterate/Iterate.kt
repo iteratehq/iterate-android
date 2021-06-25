@@ -16,6 +16,7 @@ import com.iteratehq.iterate.model.UserTraits
 
 object Iterate {
     private lateinit var iterateRepository: IterateRepository
+    private lateinit var apiKey: String
 
     /**
      * Minimal initialization that is expected to be called on app boot.
@@ -25,8 +26,9 @@ object Iterate {
      */
     @JvmStatic
     fun init(context: Context, apiKey: String) {
-        iterateRepository = DefaultIterateRepository(context.applicationContext)
-        // TODO: initSendEvent
+        this.iterateRepository = DefaultIterateRepository(context.applicationContext, apiKey)
+        this.apiKey = apiKey
+        initAuthToken()
     }
 
     /**
@@ -55,8 +57,8 @@ object Iterate {
             // Clear the storage and all caches, except for the companyAuthToken
             iterateRepository.clearExceptCompanyAuthToken()
 
-            // TODO: set the company API key as the token
             // Reset the api client to the company API key
+            iterateRepository.setApiKey(this.apiKey)
         }
     }
 
@@ -76,6 +78,10 @@ object Iterate {
 
     @JvmStatic
     fun sendEvent(eventName: String, eventTraits: EventTraits?) {
+        if (!::iterateRepository.isInitialized) {
+            throw IllegalStateException("Error calling Iterate.sendEvent(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
+        }
+
         // TODO: get userTraits from IterateRepository
         // Embed context user traits
         val userTraits = null
@@ -110,8 +116,14 @@ object Iterate {
         // TODO: call embed API
     }
 
-    @JvmSynthetic
-    internal fun dispatchShowSurveyOrPrompt(survey: Survey, responseId: Int) {
+    private fun initAuthToken() {
+        val userAuthToken = iterateRepository.getUserAuthToken()
+        if (userAuthToken != null) {
+            iterateRepository.setApiKey(userAuthToken)
+        }
+    }
+
+    private fun dispatchShowSurveyOrPrompt(survey: Survey, responseId: Int) {
         // TODO: show survey or prompt
 
         // TODO: call displayed API
