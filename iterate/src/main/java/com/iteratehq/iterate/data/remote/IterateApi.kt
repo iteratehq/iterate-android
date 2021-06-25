@@ -107,6 +107,7 @@ internal class DefaultIterateApi(
             val type = TypeToken
                 .getParameterized(ApiResponse::class.java, R::class.java)
                 .type
+
             gson.fromJson(response.toString(), type)
         }
     }

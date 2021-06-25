@@ -44,7 +44,7 @@ internal class DefaultIterateSharedPrefs(
 
     override fun getUserTraits(): UserTraits? {
         val userTraitsJson = prefs.getString(USER_TRAITS, "")
-        val type = object : TypeToken<MutableMap<String, Any>?>() {}.type
+        val type = object : TypeToken<UserTraits?>() {}.type
         return Gson().fromJson(userTraitsJson, type)
     }
 
