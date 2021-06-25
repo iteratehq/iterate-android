@@ -13,5 +13,6 @@ data class EmbedContext(
 )
 
 enum class EmbedType(val value: String) {
+    @SerializedName("mobile")
     MOBILE("mobile")
 }

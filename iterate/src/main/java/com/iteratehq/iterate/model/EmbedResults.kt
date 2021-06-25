@@ -1,5 +1,7 @@
 package com.iteratehq.iterate.model
 
+import com.google.gson.annotations.SerializedName
+
 internal data class EmbedResults(
     val auth: Auth?,
     val survey: Survey?,
@@ -17,8 +19,13 @@ internal data class Trigger(
 )
 
 internal enum class TriggerType(val value: String) {
+    @SerializedName("exit")
     EXIT("exit"),
+
+    @SerializedName("scroll")
     SCROLL("scroll"),
+
+    @SerializedName("seconds")
     SECONDS("seconds")
 }
 

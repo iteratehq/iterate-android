@@ -9,5 +9,6 @@ data class TargetingContext(
 )
 
 enum class Frequency(val value: String) {
+    @SerializedName("always")
     ALWAYS("always")
 }
