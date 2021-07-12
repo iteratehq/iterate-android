@@ -10,6 +10,7 @@ import com.iteratehq.iterate.data.remote.DefaultIterateApi
 import com.iteratehq.iterate.data.remote.IterateApi
 import com.iteratehq.iterate.model.EmbedContext
 import com.iteratehq.iterate.model.EmbedResults
+import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.Survey
 import com.iteratehq.iterate.model.UserTraits
 
@@ -22,12 +23,16 @@ internal interface IterateRepository {
     fun dismissed(survey: Survey)
     fun setApiKey(apiKey: String)
     fun clearExceptCompanyAuthToken()
+
+    // TODO: remove unused functions
     fun getCompanyAuthToken(): String?
+    fun getEventTraits(responseId: Long): EventTraits?
     fun getLastUpdated(): Long?
     fun getPreviewSurveyId(): String?
     fun getUserAuthToken(): String?
     fun getUserTraits(): UserTraits?
     fun setCompanyAuthToken(companyAuthToken: String)
+    fun setEventTraits(eventTraits: EventTraits, responseId: Long)
     fun setLastUpdated(lastUpdated: Long)
     fun setPreviewSurveyId(previewSurveyId: String)
     fun setUserAuthToken(userAuthToken: String)
@@ -69,6 +74,10 @@ internal class DefaultIterateRepository @JvmOverloads internal constructor(
         return iterateInMemoryStore.getCompanyAuthToken()
     }
 
+    override fun getEventTraits(responseId: Long): EventTraits? {
+        return iterateInMemoryStore.getEventTraits(responseId)
+    }
+
     override fun getLastUpdated(): Long? {
         return iterateSharedPrefs.getLastUpdated()
     }
@@ -87,6 +96,10 @@ internal class DefaultIterateRepository @JvmOverloads internal constructor(
 
     override fun setCompanyAuthToken(companyAuthToken: String) {
         iterateInMemoryStore.setCompanyAuthToken(companyAuthToken)
+    }
+
+    override fun setEventTraits(eventTraits: EventTraits, responseId: Long) {
+        iterateInMemoryStore.setEventTraits(eventTraits, responseId)
     }
 
     override fun setLastUpdated(lastUpdated: Long) {
