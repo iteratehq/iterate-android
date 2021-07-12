@@ -6,7 +6,7 @@ internal data class EmbedResults(
     val auth: Auth?,
     val survey: Survey?,
     val triggers: List<Trigger>?,
-    val tracking: Tracking
+    val tracking: Tracking?
 )
 
 internal data class Auth(

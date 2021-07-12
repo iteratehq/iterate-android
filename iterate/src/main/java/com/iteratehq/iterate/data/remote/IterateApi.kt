@@ -55,7 +55,7 @@ internal class DefaultIterateApi(
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/displayed"
-            httpRequest(path, Method.POST, survey)
+            httpRequest(path, Method.POST, Any())
         }
     }
 
@@ -65,7 +65,7 @@ internal class DefaultIterateApi(
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/dismiss"
-            httpRequest(path, Method.POST, survey)
+            httpRequest(path, Method.POST, Any())
         }
     }
 
@@ -75,42 +75,56 @@ internal class DefaultIterateApi(
         body: T
     ): ApiResponse<R> {
         return withContext(workContext) {
-            val url = URL("$apiHost/api/v1$path")
-            val conn = (url.openConnection() as HttpsURLConnection).apply {
-                setRequestProperty("Content-Type", "application/json")
-                setRequestProperty("Authorization", "Bearer $apiKey")
-                requestMethod = method.value
-                doOutput = (method == Method.POST)
-            }
-
-            val gson = Gson()
-            val bodyJson = gson.toJson(body)
-            conn.outputStream.use { os ->
-                val input = bodyJson.toByteArray(charset("utf-8"))
-                os.write(input, 0, input.size)
-            }
-
-            val code = conn.responseCode
-            if (code < 200 || code >= 300) {
-                throw Exception("Error calling API. Received HTTP status code $code")
-            }
-
-            val response = StringBuilder()
-            BufferedReader(InputStreamReader(conn.inputStream, "utf-8")).use { br ->
-                var responseLine = br.readLine()
-                while (responseLine != null) {
-                    response.append(responseLine.trim())
-                    responseLine = br.readLine()
+            var urlConnection: HttpsURLConnection? = null
+            try {
+                val url = URL("$apiHost/api/v1$path")
+                urlConnection = (url.openConnection() as HttpsURLConnection).apply {
+                    setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("Authorization", "Bearer $apiKey")
+                    requestMethod = method.value
+                    doOutput = (method == Method.POST)
                 }
-            }
 
-            val type = TypeToken
-                .getParameterized(ApiResponse::class.java, R::class.java)
-                .type
-            gson.fromJson(response.toString(), type)
+                val gson = Gson()
+                val bodyJson = gson.toJson(body)
+                urlConnection.outputStream.use { os ->
+                    val input = bodyJson.toByteArray(charset("utf-8"))
+                    os.write(input, 0, input.size)
+                }
+
+                val code = urlConnection.responseCode
+                if (code < 200 || code >= 300) {
+                    throw Exception("Error calling API. Received HTTP status code $code")
+                }
+
+                val response = StringBuilder()
+                BufferedReader(InputStreamReader(urlConnection.inputStream, "utf-8")).use { br ->
+                    var responseLine = br.readLine()
+                    while (responseLine != null) {
+                        response.append(responseLine.trim())
+                        responseLine = br.readLine()
+                    }
+                }
+
+                val type = TypeToken
+                    .getParameterized(ApiResponse::class.java, R::class.java)
+                    .type
+                gson.fromJson(response.toString(), type)
+            } finally {
+                urlConnection?.disconnect()
+            }
         }
     }
 
+    /**
+     * Execute the given [apiCall] function asynchronously and return the result through a [callback].
+     *
+     * [CoroutineScope] with the default context of [Dispatchers.IO] is used to run the [apiCall].
+     * The [runCatching] will return either [Result.success] if the [apiCall] operation is successful,
+     * or [Result.failure] if there is any exception thrown. The [result] will then be dispatched
+     * back to the main UI thread through [Dispatchers.Main] context, either through [onSuccess] if
+     * it is a success or [onFailure] if it is a failure.
+     */
     private fun <T> executeAsync(
         callback: ApiResponseCallback<T>? = null,
         apiCall: suspend () -> ApiResponse<T>?
