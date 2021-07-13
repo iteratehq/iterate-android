@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -22,6 +23,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        viewBinding = true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
