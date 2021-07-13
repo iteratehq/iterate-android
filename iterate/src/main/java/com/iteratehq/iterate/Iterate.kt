@@ -2,6 +2,7 @@ package com.iteratehq.iterate
 
 import android.content.Context
 import android.util.Log
+import androidx.fragment.app.FragmentManager
 import com.iteratehq.iterate.data.DefaultIterateRepository
 import com.iteratehq.iterate.data.IterateRepository
 import com.iteratehq.iterate.data.remote.ApiResponseCallback
@@ -86,7 +87,12 @@ object Iterate {
     }
 
     @JvmStatic
-    fun sendEvent(eventName: String, eventTraits: EventTraits?) {
+    @JvmOverloads
+    fun sendEvent(
+        eventName: String,
+        eventTraits: EventTraits?,
+        supportFragmentManager: FragmentManager? = null
+    ) {
         if (!::iterateRepository.isInitialized) {
             throw IllegalStateException("Error calling Iterate.sendEvent(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
         }
@@ -133,25 +139,31 @@ object Iterate {
                 }
 
                 result.survey?.let { survey ->
-                    // Generate a unique id (current timestamp) for this survey display so we ensure
-                    // we associate the correct event traits with it
-                    val responseId = Date().time
-                    if (eventTraits != null) {
-                        iterateRepository.setEventTraits(eventTraits, responseId)
-                    }
-
-                    // If the survey has a timer trigger, wait that number of seconds before showing the survey
-                    if (
-                        !result.triggers.isNullOrEmpty() &&
-                        result.triggers[0].type == TriggerType.SECONDS
-                    ) {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            val seconds = result.triggers[0].options.seconds ?: 0
-                            delay(seconds * 1000L)
-                            dispatchShowSurveyOrPrompt(survey, responseId)
+                    if (supportFragmentManager != null) {
+                        // Generate a unique id (current timestamp) for this survey display so we ensure
+                        // we associate the correct event traits with it
+                        val responseId = Date().time
+                        if (eventTraits != null) {
+                            iterateRepository.setEventTraits(eventTraits, responseId)
                         }
-                    } else {
-                        dispatchShowSurveyOrPrompt(survey, responseId)
+
+                        // If the survey has a timer trigger, wait that number of seconds before showing the survey
+                        if (
+                            !result.triggers.isNullOrEmpty() &&
+                            result.triggers[0].type == TriggerType.SECONDS
+                        ) {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                val seconds = result.triggers[0].options.seconds ?: 0
+                                delay(seconds * 1000L)
+                                dispatchShowSurveyOrPrompt(
+                                    survey,
+                                    responseId,
+                                    supportFragmentManager
+                                )
+                            }
+                        } else {
+                            dispatchShowSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                        }
                     }
                 }
             }
@@ -169,9 +181,17 @@ object Iterate {
         }
     }
 
-    private fun dispatchShowSurveyOrPrompt(survey: Survey, responseId: Long) {
-        // TODO: show survey or prompt
+    private fun dispatchShowSurveyOrPrompt(
+        survey: Survey,
+        responseId: Long,
+        supportFragmentManager: FragmentManager
+    ) {
+        if (survey.prompt != null) {
+            // Show prompt
+        } else {
+            // Show survey
+        }
 
-        // TODO: call displayed API
+        iterateRepository.displayed(survey)
     }
 }
