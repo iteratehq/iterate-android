@@ -1,10 +1,14 @@
 package com.iteratehq.iterate
 
 import android.content.Context
+import android.util.Log
+import androidx.fragment.app.FragmentManager
 import com.iteratehq.iterate.data.DefaultIterateRepository
 import com.iteratehq.iterate.data.IterateRepository
+import com.iteratehq.iterate.data.remote.ApiResponseCallback
 import com.iteratehq.iterate.model.AppContext
 import com.iteratehq.iterate.model.EmbedContext
+import com.iteratehq.iterate.model.EmbedResults
 import com.iteratehq.iterate.model.EmbedType
 import com.iteratehq.iterate.model.EventContext
 import com.iteratehq.iterate.model.EventTraits
@@ -12,10 +16,17 @@ import com.iteratehq.iterate.model.Frequency
 import com.iteratehq.iterate.model.Survey
 import com.iteratehq.iterate.model.TargetingContext
 import com.iteratehq.iterate.model.TrackingContext
+import com.iteratehq.iterate.model.TriggerType
 import com.iteratehq.iterate.model.UserTraits
+import java.util.Date
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 object Iterate {
     private lateinit var iterateRepository: IterateRepository
+    private lateinit var apiKey: String
 
     /**
      * Minimal initialization that is expected to be called on app boot.
@@ -25,8 +36,9 @@ object Iterate {
      */
     @JvmStatic
     fun init(context: Context, apiKey: String) {
-        iterateRepository = DefaultIterateRepository(context.applicationContext)
-        // TODO: initSendEvent
+        this.iterateRepository = DefaultIterateRepository(context.applicationContext, apiKey)
+        this.apiKey = apiKey
+        initAuthToken()
     }
 
     /**
@@ -55,8 +67,8 @@ object Iterate {
             // Clear the storage and all caches, except for the companyAuthToken
             iterateRepository.clearExceptCompanyAuthToken()
 
-            // TODO: set the company API key as the token
             // Reset the api client to the company API key
+            iterateRepository.setApiKey(this.apiKey)
         }
     }
 
@@ -75,19 +87,25 @@ object Iterate {
     }
 
     @JvmStatic
-    fun sendEvent(eventName: String, eventTraits: EventTraits?) {
-        // TODO: get userTraits from IterateRepository
-        // Embed context user traits
-        val userTraits = null
+    @JvmOverloads
+    fun sendEvent(
+        eventName: String,
+        eventTraits: EventTraits?,
+        supportFragmentManager: FragmentManager? = null
+    ) {
+        if (!::iterateRepository.isInitialized) {
+            throw IllegalStateException("Error calling Iterate.sendEvent(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
+        }
 
-        // TODO: get lastUpdated from IterateRepository
+        // Embed context user traits
+        val userTraits = iterateRepository.getUserTraits()
+
         // Embed context last updated
-        val lastUpdated = null
+        val lastUpdated = iterateRepository.getLastUpdated()
         val tracking = TrackingContext(lastUpdated)
 
-        // TODO: get previewSurveyId from IterateRepository
         // Embed context preview mode
-        val previewSurveyId = null
+        val previewSurveyId = iterateRepository.getPreviewSurveyId()
         val targeting = if (previewSurveyId != null) {
             TargetingContext(Frequency.ALWAYS, previewSurveyId)
         } else {
@@ -107,13 +125,76 @@ object Iterate {
             userTraits = userTraits
         )
 
-        // TODO: call embed API
+        // Call embed API
+        iterateRepository.embed(embedContext, object : ApiResponseCallback<EmbedResults> {
+            override fun onSuccess(result: EmbedResults) {
+                // Set the user auth token if one is returned
+                result.auth?.token?.let { token ->
+                    iterateRepository.setApiKey(token)
+                }
+
+                // Set the last updated time if one is returned
+                result.tracking?.lastUpdated?.let { lastUpdated ->
+                    iterateRepository.setLastUpdated(lastUpdated)
+                }
+
+                result.survey?.let { survey ->
+                    if (supportFragmentManager != null) {
+                        // Generate a unique id (current timestamp) for this survey display so we ensure
+                        // we associate the correct event traits with it
+                        val responseId = Date().time
+                        if (eventTraits != null) {
+                            iterateRepository.setEventTraits(eventTraits, responseId)
+                        }
+
+                        // If the survey has a timer trigger, wait that number of seconds before showing the survey
+                        if (
+                            !result.triggers.isNullOrEmpty() &&
+                            result.triggers[0].type == TriggerType.SECONDS
+                        ) {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                val seconds = result.triggers[0].options.seconds ?: 0
+                                delay(seconds * 1000L)
+                                dispatchShowSurveyOrPrompt(
+                                    survey,
+                                    responseId,
+                                    supportFragmentManager
+                                )
+                            }
+                        } else {
+                            dispatchShowSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                        }
+                    }
+                }
+            }
+
+            override fun onError(e: Exception) {
+                Log.e("sendEvent", e.toString())
+            }
+        })
     }
 
-    @JvmSynthetic
-    internal fun dispatchShowSurveyOrPrompt(survey: Survey, responseId: Int) {
-        // TODO: show survey or prompt
+    private fun initAuthToken() {
+        val userAuthToken = iterateRepository.getUserAuthToken()
+        if (userAuthToken != null) {
+            iterateRepository.setApiKey(userAuthToken)
+        }
+    }
 
-        // TODO: call displayed API
+    private fun dispatchShowSurveyOrPrompt(
+        survey: Survey,
+        responseId: Long,
+        supportFragmentManager: FragmentManager
+    ) {
+        if (survey.prompt != null) {
+            PromptFragment.newInstance(survey).apply {
+                show(supportFragmentManager, null)
+            }
+            // TODO: InteractionEvents.PromptDisplayed(survey);
+        } else {
+            // TODO: Show survey
+        }
+
+        iterateRepository.displayed(survey)
     }
 }
