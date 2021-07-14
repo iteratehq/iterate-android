@@ -187,7 +187,7 @@ object Iterate {
         supportFragmentManager: FragmentManager
     ) {
         if (survey.prompt != null) {
-            Prompt.newInstance(survey).apply {
+            PromptFragment.newInstance(survey).apply {
                 show(supportFragmentManager, null)
             }
             // TODO: InteractionEvents.PromptDisplayed(survey);
