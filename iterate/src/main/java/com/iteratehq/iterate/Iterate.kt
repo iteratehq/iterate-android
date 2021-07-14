@@ -13,6 +13,10 @@ import com.iteratehq.iterate.model.EmbedType
 import com.iteratehq.iterate.model.EventContext
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.Frequency
+import com.iteratehq.iterate.model.InteractionEventData
+import com.iteratehq.iterate.model.InteractionEventTypes
+import com.iteratehq.iterate.model.Question
+import com.iteratehq.iterate.model.Response
 import com.iteratehq.iterate.model.Survey
 import com.iteratehq.iterate.model.TargetingContext
 import com.iteratehq.iterate.model.TrackingContext
@@ -174,6 +178,27 @@ object Iterate {
         })
     }
 
+    @JvmStatic
+    fun onResponse(
+        userOnResponseCallback: (
+            response: Response,
+            question: Question,
+            survey: Survey
+        ) -> Unit
+    ) {
+        InteractionEventCallbacks.onResponse = userOnResponseCallback
+    }
+
+    @JvmStatic
+    fun onEvent(
+        userOnEventCallback: (
+            type: InteractionEventTypes,
+            data: InteractionEventData,
+        ) -> Unit
+    ) {
+        InteractionEventCallbacks.onEvent = userOnEventCallback
+    }
+
     private fun initAuthToken() {
         val userAuthToken = iterateRepository.getUserAuthToken()
         if (userAuthToken != null) {
@@ -190,7 +215,7 @@ object Iterate {
             PromptFragment.newInstance(survey).apply {
                 show(supportFragmentManager, null)
             }
-            // TODO: InteractionEvents.PromptDisplayed(survey);
+            InteractionEvents.promptDisplayed(survey)
         } else {
             // TODO: Show survey
         }

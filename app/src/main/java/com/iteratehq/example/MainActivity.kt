@@ -1,6 +1,7 @@
 package com.iteratehq.example
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.iteratehq.example.databinding.ActivityMainBinding
 import com.iteratehq.iterate.Iterate
@@ -18,9 +19,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupButtonHandlers()
 
-        // TODO: implement Iterate.onResponse, Iterate.onEvent, Iterate.preview
+        Iterate.onResponse { response, question, survey ->
+            Log.d("onResponseCallback", "$response $question $survey")
+        }
+
+        Iterate.onEvent { type, data ->
+            Log.d("onEventCallback", "$type $data")
+        }
 
         Iterate.init(this, API_KEY)
+
+        // TODO: implement Iterate.preview
     }
 
     private fun setupButtonHandlers() {
