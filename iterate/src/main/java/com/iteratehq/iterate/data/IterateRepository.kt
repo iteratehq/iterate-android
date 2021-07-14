@@ -5,16 +5,34 @@ import com.iteratehq.iterate.data.local.DefaultIterateInMemoryStore
 import com.iteratehq.iterate.data.local.DefaultIterateSharedPrefs
 import com.iteratehq.iterate.data.local.IterateInMemoryStore
 import com.iteratehq.iterate.data.local.IterateSharedPrefs
+import com.iteratehq.iterate.data.remote.ApiResponseCallback
+import com.iteratehq.iterate.data.remote.DefaultIterateApi
+import com.iteratehq.iterate.data.remote.IterateApi
+import com.iteratehq.iterate.model.EmbedContext
+import com.iteratehq.iterate.model.EmbedResults
+import com.iteratehq.iterate.model.EventTraits
+import com.iteratehq.iterate.model.Survey
 import com.iteratehq.iterate.model.UserTraits
 
 internal interface IterateRepository {
+    fun embed(
+        embedContext: EmbedContext,
+        callback: ApiResponseCallback<EmbedResults>?
+    )
+    fun displayed(survey: Survey)
+    fun dismissed(survey: Survey)
+    fun setApiKey(apiKey: String)
     fun clearExceptCompanyAuthToken()
+
+    // TODO: remove unused functions
     fun getCompanyAuthToken(): String?
+    fun getEventTraits(responseId: Long): EventTraits?
     fun getLastUpdated(): Long?
     fun getPreviewSurveyId(): String?
     fun getUserAuthToken(): String?
     fun getUserTraits(): UserTraits?
     fun setCompanyAuthToken(companyAuthToken: String)
+    fun setEventTraits(eventTraits: EventTraits, responseId: Long)
     fun setLastUpdated(lastUpdated: Long)
     fun setPreviewSurveyId(previewSurveyId: String)
     fun setUserAuthToken(userAuthToken: String)
@@ -23,9 +41,27 @@ internal interface IterateRepository {
 
 internal class DefaultIterateRepository @JvmOverloads internal constructor(
     context: Context,
+    apiKey: String,
+    private var iterateAPi: IterateApi = DefaultIterateApi(apiKey),
     private val iterateInMemoryStore: IterateInMemoryStore = DefaultIterateInMemoryStore(),
     private val iterateSharedPrefs: IterateSharedPrefs = DefaultIterateSharedPrefs(context.applicationContext),
 ) : IterateRepository {
+
+    override fun embed(embedContext: EmbedContext, callback: ApiResponseCallback<EmbedResults>?) {
+        iterateAPi.embed(embedContext, callback)
+    }
+
+    override fun displayed(survey: Survey) {
+        iterateAPi.displayed(survey)
+    }
+
+    override fun dismissed(survey: Survey) {
+        iterateAPi.dismissed(survey)
+    }
+
+    override fun setApiKey(apiKey: String) {
+        iterateAPi = DefaultIterateApi(apiKey)
+    }
 
     override fun clearExceptCompanyAuthToken() {
         val companyAuthToken = iterateInMemoryStore.getCompanyAuthToken()
@@ -36,6 +72,10 @@ internal class DefaultIterateRepository @JvmOverloads internal constructor(
 
     override fun getCompanyAuthToken(): String? {
         return iterateInMemoryStore.getCompanyAuthToken()
+    }
+
+    override fun getEventTraits(responseId: Long): EventTraits? {
+        return iterateInMemoryStore.getEventTraits(responseId)
     }
 
     override fun getLastUpdated(): Long? {
@@ -56,6 +96,10 @@ internal class DefaultIterateRepository @JvmOverloads internal constructor(
 
     override fun setCompanyAuthToken(companyAuthToken: String) {
         iterateInMemoryStore.setCompanyAuthToken(companyAuthToken)
+    }
+
+    override fun setEventTraits(eventTraits: EventTraits, responseId: Long) {
+        iterateInMemoryStore.setEventTraits(eventTraits, responseId)
     }
 
     override fun setLastUpdated(lastUpdated: Long) {

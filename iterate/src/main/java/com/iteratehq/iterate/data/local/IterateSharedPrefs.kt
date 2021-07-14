@@ -2,6 +2,8 @@ package com.iteratehq.iterate.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.model.UserTraits
@@ -21,7 +23,16 @@ internal class DefaultIterateSharedPrefs(
 ) : IterateSharedPrefs {
 
     private val prefs: SharedPreferences by lazy {
-        context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        EncryptedSharedPreferences.create(
+            context,
+            PREFS_FILE,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
     override fun clear() {
@@ -68,7 +79,7 @@ internal class DefaultIterateSharedPrefs(
     }
 
     private companion object {
-        private const val PREF_FILE = "IterateSharedPrefs"
+        private const val PREFS_FILE = "IterateSharedPrefs"
         private const val LAST_UPDATED = "LAST_UPDATED"
         private const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         private const val USER_TRAITS = "USER_TRAITS"
