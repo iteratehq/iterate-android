@@ -19,17 +19,17 @@ import kotlin.coroutines.CoroutineContext
 internal interface IterateApi {
     fun embed(
         embedContext: EmbedContext,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<EmbedResults>? = null
     )
 
     fun displayed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<EmbedResults>? = null
     )
 
     fun dismissed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<EmbedResults>? = null
     )
 }
 
@@ -126,7 +126,7 @@ internal class DefaultIterateApi(
      * it is a success or [onFailure] if it is a failure.
      */
     private fun <T> executeAsync(
-        callback: ApiResponseCallback<T>? = null,
+        callback: ApiResponseCallback<T>?,
         apiCall: suspend () -> ApiResponse<T>?
     ) {
         CoroutineScope(workContext).launch {
