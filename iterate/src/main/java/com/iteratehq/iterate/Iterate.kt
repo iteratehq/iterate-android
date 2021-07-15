@@ -24,6 +24,7 @@ import com.iteratehq.iterate.model.TrackingContext
 import com.iteratehq.iterate.model.TriggerType
 import com.iteratehq.iterate.model.UserTraits
 import com.iteratehq.iterate.view.PromptView
+import com.iteratehq.iterate.view.SurveyView
 import java.util.Date
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +45,7 @@ object Iterate {
     fun init(context: Context, apiKey: String) {
         this.iterateRepository = DefaultIterateRepository(context.applicationContext, apiKey)
         this.apiKey = apiKey
-        initAuthToken()
+        initAuthToken(apiKey)
     }
 
     /**
@@ -136,6 +137,7 @@ object Iterate {
             override fun onSuccess(result: EmbedResults) {
                 // Set the user auth token if one is returned
                 result.auth?.token?.let { token ->
+                    iterateRepository.setUserAuthToken(token)
                     iterateRepository.setApiKey(token)
                 }
 
@@ -197,9 +199,12 @@ object Iterate {
         InteractionEventCallbacks.onEvent = userOnEventCallback
     }
 
-    private fun initAuthToken() {
+    private fun initAuthToken(companyAuthToken: String) {
+        iterateRepository.setCompanyAuthToken(companyAuthToken)
+
         val userAuthToken = iterateRepository.getUserAuthToken()
         if (userAuthToken != null) {
+            iterateRepository.setUserAuthToken(userAuthToken)
             iterateRepository.setApiKey(userAuthToken)
         }
     }
@@ -210,19 +215,33 @@ object Iterate {
         supportFragmentManager: FragmentManager
     ) {
         if (survey.prompt != null) {
-            showPrompt(survey, supportFragmentManager)
+            showPrompt(survey, responseId, supportFragmentManager)
         } else {
-            showSurvey(survey, supportFragmentManager)
+            showSurvey(survey, responseId, supportFragmentManager)
         }
         iterateRepository.displayed(survey)
     }
 
-    private fun showSurvey(survey: Survey, supportFragmentManager: FragmentManager) {
-        // TODO: show survey
+    private fun showSurvey(
+        survey: Survey,
+        responseId: Long,
+        supportFragmentManager: FragmentManager
+    ) {
+        val authToken =
+            iterateRepository.getUserAuthToken() ?: iterateRepository.getCompanyAuthToken()
+        val eventTraits = iterateRepository.getEventTraits(responseId)
+        SurveyView.newInstance(survey, authToken, eventTraits).apply {
+            show(supportFragmentManager, null)
+        }
+
         InteractionEvents.surveyDisplayed(survey)
     }
 
-    private fun showPrompt(survey: Survey, supportFragmentManager: FragmentManager) {
+    private fun showPrompt(
+        survey: Survey,
+        responseId: Long,
+        supportFragmentManager: FragmentManager
+    ) {
         PromptView.newInstance(survey).apply {
             setListener(object : PromptView.PromptListener {
                 override fun onDismiss() {
@@ -231,11 +250,12 @@ object Iterate {
                 }
 
                 override fun onPromptButtonClick(survey: Survey) {
-                    showSurvey(survey, supportFragmentManager)
+                    showSurvey(survey, responseId, supportFragmentManager)
                 }
             })
             show(supportFragmentManager, null)
         }
+
         InteractionEvents.promptDisplayed(survey)
     }
 }
