@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupButtonHandlers() {
         binding.btnTriggerSurvey.setOnClickListener {
-
             Iterate.sendEvent(
                 "show-survey-button-tapped",
                 EventTraits("currentTime" to Date().time),

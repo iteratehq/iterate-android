@@ -14,6 +14,7 @@ import com.iteratehq.iterate.model.EventContext
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.Frequency
 import com.iteratehq.iterate.model.InteractionEventData
+import com.iteratehq.iterate.model.InteractionEventSource
 import com.iteratehq.iterate.model.InteractionEventTypes
 import com.iteratehq.iterate.model.Question
 import com.iteratehq.iterate.model.Response
@@ -22,6 +23,7 @@ import com.iteratehq.iterate.model.TargetingContext
 import com.iteratehq.iterate.model.TrackingContext
 import com.iteratehq.iterate.model.TriggerType
 import com.iteratehq.iterate.model.UserTraits
+import com.iteratehq.iterate.view.PromptView
 import java.util.Date
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -159,14 +161,10 @@ object Iterate {
                             CoroutineScope(Dispatchers.Default).launch {
                                 val seconds = result.triggers[0].options.seconds ?: 0
                                 delay(seconds * 1000L)
-                                dispatchShowSurveyOrPrompt(
-                                    survey,
-                                    responseId,
-                                    supportFragmentManager
-                                )
+                                showSurveyOrPrompt(survey, responseId, supportFragmentManager)
                             }
                         } else {
-                            dispatchShowSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                            showSurveyOrPrompt(survey, responseId, supportFragmentManager)
                         }
                     }
                 }
@@ -206,20 +204,38 @@ object Iterate {
         }
     }
 
-    private fun dispatchShowSurveyOrPrompt(
+    private fun showSurveyOrPrompt(
         survey: Survey,
         responseId: Long,
         supportFragmentManager: FragmentManager
     ) {
         if (survey.prompt != null) {
-            PromptFragment.newInstance(survey).apply {
-                show(supportFragmentManager, null)
-            }
-            InteractionEvents.promptDisplayed(survey)
+            showPrompt(survey, supportFragmentManager)
         } else {
-            // TODO: Show survey
+            showSurvey(survey, supportFragmentManager)
         }
-
         iterateRepository.displayed(survey)
+    }
+
+    private fun showSurvey(survey: Survey, supportFragmentManager: FragmentManager) {
+        // TODO: show survey
+        InteractionEvents.surveyDisplayed(survey)
+    }
+
+    private fun showPrompt(survey: Survey, supportFragmentManager: FragmentManager) {
+        PromptView.newInstance(survey).apply {
+            setListener(object : PromptView.PromptListener {
+                override fun onDismiss() {
+                    iterateRepository.dismissed(survey)
+                    InteractionEvents.dismiss(InteractionEventSource.PROMPT, survey, null)
+                }
+
+                override fun onPromptButtonClick(survey: Survey) {
+                    showSurvey(survey, supportFragmentManager)
+                }
+            })
+            show(supportFragmentManager, null)
+        }
+        InteractionEvents.promptDisplayed(survey)
     }
 }
