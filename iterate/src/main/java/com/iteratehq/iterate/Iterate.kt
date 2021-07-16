@@ -16,6 +16,7 @@ import com.iteratehq.iterate.model.Frequency
 import com.iteratehq.iterate.model.InteractionEventData
 import com.iteratehq.iterate.model.InteractionEventSource
 import com.iteratehq.iterate.model.InteractionEventTypes
+import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.Question
 import com.iteratehq.iterate.model.Response
 import com.iteratehq.iterate.model.Survey
@@ -231,6 +232,14 @@ object Iterate {
             iterateRepository.getUserAuthToken() ?: iterateRepository.getCompanyAuthToken()
         val eventTraits = iterateRepository.getEventTraits(responseId)
         SurveyView.newInstance(survey, authToken, eventTraits).apply {
+            setListener(object : SurveyView.SurveyListener {
+                override fun onDismiss(
+                    source: InteractionEventSource,
+                    progress: ProgressEventMessageData?
+                ) {
+                    dismissed(source, survey, progress)
+                }
+            })
             show(supportFragmentManager, null)
         }
 
@@ -244,9 +253,11 @@ object Iterate {
     ) {
         PromptView.newInstance(survey).apply {
             setListener(object : PromptView.PromptListener {
-                override fun onDismiss() {
-                    iterateRepository.dismissed(survey)
-                    InteractionEvents.dismiss(InteractionEventSource.PROMPT, survey, null)
+                override fun onDismiss(
+                    source: InteractionEventSource,
+                    progress: ProgressEventMessageData?
+                ) {
+                    dismissed(source, survey, progress)
                 }
 
                 override fun onPromptButtonClick(survey: Survey) {
@@ -257,5 +268,14 @@ object Iterate {
         }
 
         InteractionEvents.promptDisplayed(survey)
+    }
+
+    private fun dismissed(
+        source: InteractionEventSource,
+        survey: Survey,
+        progress: ProgressEventMessageData?
+    ) {
+        iterateRepository.dismissed(survey)
+        InteractionEvents.dismiss(source, survey, progress)
     }
 }

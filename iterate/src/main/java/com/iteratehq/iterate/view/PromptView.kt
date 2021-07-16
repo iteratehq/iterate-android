@@ -9,12 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.iteratehq.iterate.databinding.PromptViewBinding
+import com.iteratehq.iterate.model.InteractionEventSource
+import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.Survey
 
 class PromptView : BottomSheetDialogFragment() {
 
     interface PromptListener {
-        fun onDismiss()
+        fun onDismiss(source: InteractionEventSource, progress: ProgressEventMessageData?)
         fun onPromptButtonClick(survey: Survey)
     }
 
@@ -41,7 +43,7 @@ class PromptView : BottomSheetDialogFragment() {
 
         // Call listener only when the prompt is dismissed not due to clicking on the prompt button
         if (!promptButtonClicked) {
-            listener?.onDismiss()
+            listener?.onDismiss(InteractionEventSource.PROMPT, null)
         }
     }
 

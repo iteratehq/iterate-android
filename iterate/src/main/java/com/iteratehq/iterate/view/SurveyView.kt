@@ -1,25 +1,41 @@
 package com.iteratehq.iterate.view
 
+import android.R
+import android.content.DialogInterface
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
+import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.iteratehq.iterate.InteractionEvents
 import com.iteratehq.iterate.data.remote.DefaultIterateApi
 import com.iteratehq.iterate.databinding.SurveyViewBinding
+import com.iteratehq.iterate.model.EventMessageTypes
 import com.iteratehq.iterate.model.EventTraits
+import com.iteratehq.iterate.model.InteractionEventSource
+import com.iteratehq.iterate.model.ProgressEventMessageData
+import com.iteratehq.iterate.model.ResponseEventMessageData
 import com.iteratehq.iterate.model.Survey
 
 
 class SurveyView : DialogFragment() {
 
+    interface SurveyListener {
+        fun onDismiss(source: InteractionEventSource, progress: ProgressEventMessageData?)
+    }
+
     private lateinit var binding: SurveyViewBinding
+    private val survey by lazy { arguments?.getParcelable<Survey>(SURVEY)!! }
+    private var listener: SurveyListener? = null
+    private var progress: ProgressEventMessageData? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,21 +46,26 @@ class SurveyView : DialogFragment() {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.Theme_Material_NoActionBar)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        listener?.onDismiss(InteractionEventSource.SURVEY, progress)
+    }
+
+    fun setListener(listener: SurveyListener) {
+        this.listener = listener
     }
 
     private fun setupView() {
-        val survey = arguments?.getParcelable<Survey>(SURVEY)
         val authToken = arguments?.getString(AUTH_TOKEN)
         val eventTraits = arguments?.getSerializable(EVENT_TRAITS) as EventTraits?
 
@@ -67,21 +88,69 @@ class SurveyView : DialogFragment() {
         }
 
         // Add theme
-        val theme = if (isDarkThemeOn()) "dark" else "light"
+        val theme = if (isDarkTheme()) "dark" else "light"
         params.add("theme=$theme")
 
-        val url = "${DefaultIterateApi.DEFAULT_HOST}/${survey?.companyId}/${survey?.id}/mobile?${
+        val url = "${DefaultIterateApi.DEFAULT_HOST}/${survey.companyId}/${survey.id}/mobile?${
             params.joinToString("&")
         }"
 
-        binding.webview.run {
+        binding.webview.apply {
             settings.javaScriptEnabled = true
+
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    binding.progressBar.isVisible = false
+                }
+            }
+
+            // Bind an interface between JavaScript and Android code.
+            // "ReactNativeWebView" is the interface name used when the JavaScript calls the
+            // "postMessage" function.
+            addJavascriptInterface(object {
+                @JavascriptInterface
+                fun postMessage(message: String) {
+                    onMessage(message)
+                }
+            }, "ReactNativeWebView")
+
             loadUrl(url)
         }
     }
 
-    private fun isDarkThemeOn(): Boolean {
+    private fun isDarkTheme(): Boolean {
         return (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
+    }
+
+    private fun onMessage(message: String) {
+        val gson = Gson()
+        val messageMap = gson.fromJson<Map<String, Any?>>(
+            message,
+            object : TypeToken<Map<String, Any?>>() {}.type
+        )
+
+        when (messageMap["type"]) {
+            EventMessageTypes.CLOSE.value -> {
+                dismiss()
+            }
+            EventMessageTypes.PROGRESS.value -> {
+                progress = gson.fromJson(
+                    gson.toJson(messageMap["data"]),
+                    ProgressEventMessageData::class.java
+                )
+            }
+            EventMessageTypes.RESPONSE.value -> {
+                val data = gson.fromJson(
+                    gson.toJson(messageMap["data"]),
+                    ResponseEventMessageData::class.java
+                )
+                InteractionEvents.response(survey, data.response, data.question)
+            }
+            EventMessageTypes.SURVEY_COMPLETE.value -> {
+                InteractionEvents.surveyComplete(survey)
+            }
+        }
     }
 
     companion object {
