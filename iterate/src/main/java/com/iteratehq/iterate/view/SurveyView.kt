@@ -25,7 +25,6 @@ import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.ResponseEventMessageData
 import com.iteratehq.iterate.model.Survey
 
-
 class SurveyView : DialogFragment() {
 
     interface SurveyListener {
@@ -66,10 +65,9 @@ class SurveyView : DialogFragment() {
     }
 
     private fun setupView() {
+        val params = mutableListOf<String>()
         val authToken = arguments?.getString(AUTH_TOKEN)
         val eventTraits = arguments?.getSerializable(EVENT_TRAITS) as EventTraits?
-
-        val params = mutableListOf<String>()
 
         // Add the auth token
         if (authToken != null) {
