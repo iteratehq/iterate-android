@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.view.ContextThemeWrapper
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.iteratehq.iterate.R
 import com.iteratehq.iterate.databinding.PromptViewBinding
 import com.iteratehq.iterate.model.InteractionEventSource
 import com.iteratehq.iterate.model.ProgressEventMessageData
@@ -29,7 +31,13 @@ class PromptView : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = PromptViewBinding.inflate(inflater)
+        // Create ContextThemeWrapper with the custom theme
+        val contextThemeWrapper =
+            ContextThemeWrapper(requireContext(), R.style.Theme_IterateLibrary)
+        // Clone the inflater using the ContextThemeWrapper
+        val clonedInflater = inflater.cloneInContext(contextThemeWrapper)
+        // Inflate the layout using the cloned inflater, not the default inflater
+        binding = PromptViewBinding.inflate(clonedInflater)
         return binding.root
     }
 
