@@ -49,11 +49,6 @@ object Iterate {
         initAuthToken(apiKey)
     }
 
-    /**
-     * TODO: add explanation
-     *
-     * @throws IllegalStateException TODO: add explanation
-     */
     @Throws(IllegalStateException::class)
     @JvmStatic
     fun identify(userTraits: UserTraits) {
@@ -80,11 +75,6 @@ object Iterate {
         }
     }
 
-    /**
-     * TODO: add explanation
-     *
-     * @throws IllegalStateException TODO: add explanation
-     */
     @Throws(IllegalStateException::class)
     @JvmStatic
     fun preview(surveyId: String) {
@@ -94,6 +84,7 @@ object Iterate {
         iterateRepository.setPreviewSurveyId(surveyId)
     }
 
+    @Throws(IllegalStateException::class)
     @JvmStatic
     @JvmOverloads
     fun sendEvent(
@@ -110,7 +101,11 @@ object Iterate {
 
         // Embed context last updated
         val lastUpdated = iterateRepository.getLastUpdated()
-        val tracking = TrackingContext(lastUpdated)
+        val tracking = if (lastUpdated != null) {
+            TrackingContext(lastUpdated)
+        } else {
+            null
+        }
 
         // Embed context preview mode
         val previewSurveyId = iterateRepository.getPreviewSurveyId()
@@ -123,7 +118,7 @@ object Iterate {
         // Set the embed context
         val embedContext = EmbedContext(
             app = AppContext(
-                version = "1.0.0", // TODO: get from BuildConfig
+                version = BuildConfig.VERSION_NAME,
                 urlScheme = null   // TODO: add urlScheme for deep link
             ),
             event = EventContext(eventName),
@@ -174,7 +169,7 @@ object Iterate {
             }
 
             override fun onError(e: Exception) {
-                Log.e("sendEvent", e.toString())
+                Log.e("sendEvent error", e.toString())
             }
         })
     }

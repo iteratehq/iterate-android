@@ -28,8 +28,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         Iterate.init(this, API_KEY)
-
-        // TODO: implement Iterate.preview
     }
 
     private fun setupButtonHandlers() {
