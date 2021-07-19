@@ -89,9 +89,8 @@ class SurveyView : DialogFragment() {
         val theme = if (isDarkTheme()) "dark" else "light"
         params.add("theme=$theme")
 
-        val url = "${DefaultIterateApi.DEFAULT_HOST}/${survey.companyId}/${survey.id}/mobile?${
-            params.joinToString("&")
-        }"
+        val url = "${DefaultIterateApi.DEFAULT_HOST}/${survey.companyId}/" +
+            "${survey.id}/mobile?${params.joinToString("&")}"
 
         binding.webview.apply {
             settings.javaScriptEnabled = true
@@ -106,12 +105,15 @@ class SurveyView : DialogFragment() {
             // Bind an interface between JavaScript and Android code.
             // "ReactNativeWebView" is the interface name used when the JavaScript calls the
             // "postMessage" function.
-            addJavascriptInterface(object {
-                @JavascriptInterface
-                fun postMessage(message: String) {
-                    onMessage(message)
-                }
-            }, "ReactNativeWebView")
+            addJavascriptInterface(
+                object {
+                    @JavascriptInterface
+                    fun postMessage(message: String) {
+                        onMessage(message)
+                    }
+                },
+                "ReactNativeWebView"
+            )
 
             loadUrl(url)
         }

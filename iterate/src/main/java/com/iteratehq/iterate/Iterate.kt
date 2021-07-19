@@ -26,11 +26,11 @@ import com.iteratehq.iterate.model.TriggerType
 import com.iteratehq.iterate.model.UserTraits
 import com.iteratehq.iterate.view.PromptView
 import com.iteratehq.iterate.view.SurveyView
-import java.util.Date
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 object Iterate {
     private lateinit var iterateRepository: IterateRepository
@@ -119,7 +119,7 @@ object Iterate {
         val embedContext = EmbedContext(
             app = AppContext(
                 version = BuildConfig.VERSION_NAME,
-                urlScheme = null   // TODO: add urlScheme for deep link
+                urlScheme = null // TODO: add urlScheme for deep link
             ),
             event = EventContext(eventName),
             type = EmbedType.MOBILE,
@@ -129,49 +129,52 @@ object Iterate {
         )
 
         // Call embed API
-        iterateRepository.embed(embedContext, object : ApiResponseCallback<EmbedResults> {
-            override fun onSuccess(result: EmbedResults) {
-                // Set the user auth token if one is returned
-                result.auth?.token?.let { token ->
-                    iterateRepository.setUserAuthToken(token)
-                    iterateRepository.setApiKey(token)
-                }
+        iterateRepository.embed(
+            embedContext,
+            object : ApiResponseCallback<EmbedResults> {
+                override fun onSuccess(result: EmbedResults) {
+                    // Set the user auth token if one is returned
+                    result.auth?.token?.let { token ->
+                        iterateRepository.setUserAuthToken(token)
+                        iterateRepository.setApiKey(token)
+                    }
 
-                // Set the last updated time if one is returned
-                result.tracking?.lastUpdated?.let { lastUpdated ->
-                    iterateRepository.setLastUpdated(lastUpdated)
-                }
+                    // Set the last updated time if one is returned
+                    result.tracking?.lastUpdated?.let { lastUpdated ->
+                        iterateRepository.setLastUpdated(lastUpdated)
+                    }
 
-                result.survey?.let { survey ->
-                    if (supportFragmentManager != null) {
-                        // Generate a unique id (current timestamp) for this survey display so we ensure
-                        // we associate the correct event traits with it
-                        val responseId = Date().time
-                        if (eventTraits != null) {
-                            iterateRepository.setEventTraits(eventTraits, responseId)
-                        }
+                    result.survey?.let { survey ->
+                        if (supportFragmentManager != null) {
+                            // Generate a unique id (current timestamp) for this survey display so we ensure
+                            // we associate the correct event traits with it
+                            val responseId = Date().time
+                            if (eventTraits != null) {
+                                iterateRepository.setEventTraits(eventTraits, responseId)
+                            }
 
-                        // If the survey has a timer trigger, wait that number of seconds before showing the survey
-                        if (
-                            !result.triggers.isNullOrEmpty() &&
-                            result.triggers[0].type == TriggerType.SECONDS
-                        ) {
-                            CoroutineScope(Dispatchers.Default).launch {
-                                val seconds = result.triggers[0].options.seconds ?: 0
-                                delay(seconds * 1000L)
+                            // If the survey has a timer trigger, wait that number of seconds before showing the survey
+                            if (
+                                !result.triggers.isNullOrEmpty() &&
+                                result.triggers[0].type == TriggerType.SECONDS
+                            ) {
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    val seconds = result.triggers[0].options.seconds ?: 0
+                                    delay(seconds * 1000L)
+                                    showSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                                }
+                            } else {
                                 showSurveyOrPrompt(survey, responseId, supportFragmentManager)
                             }
-                        } else {
-                            showSurveyOrPrompt(survey, responseId, supportFragmentManager)
                         }
                     }
                 }
-            }
 
-            override fun onError(e: Exception) {
-                Log.e("sendEvent error", e.toString())
+                override fun onError(e: Exception) {
+                    Log.e("sendEvent error", e.toString())
+                }
             }
-        })
+        )
     }
 
     @JvmStatic
