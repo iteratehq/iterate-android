@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Iterate Example</string>
+    <string name="app_name">Iterate</string>
     <string name="hello">Hello</string>
     <string name="trigger_survey">Trigger Survey</string>
     <string name="login">Login</string>
