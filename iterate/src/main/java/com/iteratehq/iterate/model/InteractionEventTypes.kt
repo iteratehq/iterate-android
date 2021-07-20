@@ -6,4 +6,3 @@ enum class InteractionEventTypes(val value: String) {
     RESPONSE("response"),
     SURVEY_COMPLETE("survey-complete"),
 }
-
