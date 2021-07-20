@@ -14,7 +14,9 @@ import com.iteratehq.iterate.model.EventContext
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.Frequency
 import com.iteratehq.iterate.model.InteractionEventData
+import com.iteratehq.iterate.model.InteractionEventSource
 import com.iteratehq.iterate.model.InteractionEventTypes
+import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.Question
 import com.iteratehq.iterate.model.Response
 import com.iteratehq.iterate.model.Survey
@@ -22,11 +24,13 @@ import com.iteratehq.iterate.model.TargetingContext
 import com.iteratehq.iterate.model.TrackingContext
 import com.iteratehq.iterate.model.TriggerType
 import com.iteratehq.iterate.model.UserTraits
-import java.util.Date
+import com.iteratehq.iterate.view.PromptView
+import com.iteratehq.iterate.view.SurveyView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 object Iterate {
     private lateinit var iterateRepository: IterateRepository
@@ -42,14 +46,9 @@ object Iterate {
     fun init(context: Context, apiKey: String) {
         this.iterateRepository = DefaultIterateRepository(context.applicationContext, apiKey)
         this.apiKey = apiKey
-        initAuthToken()
+        initAuthToken(apiKey)
     }
 
-    /**
-     * TODO: add explanation
-     *
-     * @throws IllegalStateException TODO: add explanation
-     */
     @Throws(IllegalStateException::class)
     @JvmStatic
     fun identify(userTraits: UserTraits) {
@@ -76,11 +75,6 @@ object Iterate {
         }
     }
 
-    /**
-     * TODO: add explanation
-     *
-     * @throws IllegalStateException TODO: add explanation
-     */
     @Throws(IllegalStateException::class)
     @JvmStatic
     fun preview(surveyId: String) {
@@ -90,6 +84,7 @@ object Iterate {
         iterateRepository.setPreviewSurveyId(surveyId)
     }
 
+    @Throws(IllegalStateException::class)
     @JvmStatic
     @JvmOverloads
     fun sendEvent(
@@ -106,7 +101,11 @@ object Iterate {
 
         // Embed context last updated
         val lastUpdated = iterateRepository.getLastUpdated()
-        val tracking = TrackingContext(lastUpdated)
+        val tracking = if (lastUpdated != null) {
+            TrackingContext(lastUpdated)
+        } else {
+            null
+        }
 
         // Embed context preview mode
         val previewSurveyId = iterateRepository.getPreviewSurveyId()
@@ -119,8 +118,8 @@ object Iterate {
         // Set the embed context
         val embedContext = EmbedContext(
             app = AppContext(
-                version = "1.0.0", // TODO: get from BuildConfig
-                urlScheme = null   // TODO: add urlScheme for deep link
+                version = BuildConfig.VERSION_NAME,
+                urlScheme = null // TODO: add urlScheme for deep link
             ),
             event = EventContext(eventName),
             type = EmbedType.MOBILE,
@@ -130,52 +129,52 @@ object Iterate {
         )
 
         // Call embed API
-        iterateRepository.embed(embedContext, object : ApiResponseCallback<EmbedResults> {
-            override fun onSuccess(result: EmbedResults) {
-                // Set the user auth token if one is returned
-                result.auth?.token?.let { token ->
-                    iterateRepository.setApiKey(token)
-                }
+        iterateRepository.embed(
+            embedContext,
+            object : ApiResponseCallback<EmbedResults> {
+                override fun onSuccess(result: EmbedResults) {
+                    // Set the user auth token if one is returned
+                    result.auth?.token?.let { token ->
+                        iterateRepository.setUserAuthToken(token)
+                        iterateRepository.setApiKey(token)
+                    }
 
-                // Set the last updated time if one is returned
-                result.tracking?.lastUpdated?.let { lastUpdated ->
-                    iterateRepository.setLastUpdated(lastUpdated)
-                }
+                    // Set the last updated time if one is returned
+                    result.tracking?.lastUpdated?.let { lastUpdated ->
+                        iterateRepository.setLastUpdated(lastUpdated)
+                    }
 
-                result.survey?.let { survey ->
-                    if (supportFragmentManager != null) {
-                        // Generate a unique id (current timestamp) for this survey display so we ensure
-                        // we associate the correct event traits with it
-                        val responseId = Date().time
-                        if (eventTraits != null) {
-                            iterateRepository.setEventTraits(eventTraits, responseId)
-                        }
-
-                        // If the survey has a timer trigger, wait that number of seconds before showing the survey
-                        if (
-                            !result.triggers.isNullOrEmpty() &&
-                            result.triggers[0].type == TriggerType.SECONDS
-                        ) {
-                            CoroutineScope(Dispatchers.Default).launch {
-                                val seconds = result.triggers[0].options.seconds ?: 0
-                                delay(seconds * 1000L)
-                                dispatchShowSurveyOrPrompt(
-                                    survey,
-                                    responseId,
-                                    supportFragmentManager
-                                )
+                    result.survey?.let { survey ->
+                        if (supportFragmentManager != null) {
+                            // Generate a unique id (current timestamp) for this survey display so we ensure
+                            // we associate the correct event traits with it
+                            val responseId = Date().time
+                            if (eventTraits != null) {
+                                iterateRepository.setEventTraits(eventTraits, responseId)
                             }
-                        } else {
-                            dispatchShowSurveyOrPrompt(survey, responseId, supportFragmentManager)
+
+                            // If the survey has a timer trigger, wait that number of seconds before showing the survey
+                            if (
+                                !result.triggers.isNullOrEmpty() &&
+                                result.triggers[0].type == TriggerType.SECONDS
+                            ) {
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    val seconds = result.triggers[0].options.seconds ?: 0
+                                    delay(seconds * 1000L)
+                                    showSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                                }
+                            } else {
+                                showSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                            }
                         }
                     }
                 }
-            }
 
-            override fun onError(e: Exception) {
-                Log.e("sendEvent", e.toString())
+                override fun onError(e: Exception) {
+                    Log.e("sendEvent error", e.toString())
+                }
             }
-        })
+        )
     }
 
     @JvmStatic
@@ -199,27 +198,82 @@ object Iterate {
         InteractionEventCallbacks.onEvent = userOnEventCallback
     }
 
-    private fun initAuthToken() {
+    private fun initAuthToken(companyAuthToken: String) {
+        iterateRepository.setCompanyAuthToken(companyAuthToken)
+
         val userAuthToken = iterateRepository.getUserAuthToken()
         if (userAuthToken != null) {
+            iterateRepository.setUserAuthToken(userAuthToken)
             iterateRepository.setApiKey(userAuthToken)
         }
     }
 
-    private fun dispatchShowSurveyOrPrompt(
+    private fun showSurveyOrPrompt(
         survey: Survey,
         responseId: Long,
         supportFragmentManager: FragmentManager
     ) {
         if (survey.prompt != null) {
-            PromptFragment.newInstance(survey).apply {
-                show(supportFragmentManager, null)
-            }
-            InteractionEvents.promptDisplayed(survey)
+            showPrompt(survey, responseId, supportFragmentManager)
         } else {
-            // TODO: Show survey
+            showSurvey(survey, responseId, supportFragmentManager)
+        }
+        iterateRepository.displayed(survey)
+    }
+
+    private fun showSurvey(
+        survey: Survey,
+        responseId: Long,
+        supportFragmentManager: FragmentManager
+    ) {
+        val authToken =
+            iterateRepository.getUserAuthToken() ?: iterateRepository.getCompanyAuthToken()
+        val eventTraits = iterateRepository.getEventTraits(responseId)
+        SurveyView.newInstance(survey, authToken, eventTraits).apply {
+            setListener(object : SurveyView.SurveyListener {
+                override fun onDismiss(
+                    source: InteractionEventSource,
+                    progress: ProgressEventMessageData?
+                ) {
+                    dismissed(source, survey, progress)
+                }
+            })
+            show(supportFragmentManager, null)
         }
 
-        iterateRepository.displayed(survey)
+        InteractionEvents.surveyDisplayed(survey)
+    }
+
+    private fun showPrompt(
+        survey: Survey,
+        responseId: Long,
+        supportFragmentManager: FragmentManager
+    ) {
+        PromptView.newInstance(survey).apply {
+            setListener(object : PromptView.PromptListener {
+                override fun onDismiss(
+                    source: InteractionEventSource,
+                    progress: ProgressEventMessageData?
+                ) {
+                    dismissed(source, survey, progress)
+                }
+
+                override fun onPromptButtonClick(survey: Survey) {
+                    showSurvey(survey, responseId, supportFragmentManager)
+                }
+            })
+            show(supportFragmentManager, null)
+        }
+
+        InteractionEvents.promptDisplayed(survey)
+    }
+
+    private fun dismissed(
+        source: InteractionEventSource,
+        survey: Survey,
+        progress: ProgressEventMessageData?
+    ) {
+        iterateRepository.dismissed(survey)
+        InteractionEvents.dismiss(source, survey, progress)
     }
 }

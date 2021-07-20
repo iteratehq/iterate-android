@@ -158,8 +158,8 @@ internal class DefaultIterateApi(
         }
     }
 
-    private companion object {
-        private const val DEFAULT_HOST = "https://iteratehq.com"
+    companion object {
+        const val DEFAULT_HOST = "https://iteratehq.com"
     }
 }
 

@@ -23,8 +23,6 @@ internal interface IterateRepository {
     fun dismissed(survey: Survey)
     fun setApiKey(apiKey: String)
     fun clearExceptCompanyAuthToken()
-
-    // TODO: remove unused functions
     fun getCompanyAuthToken(): String?
     fun getEventTraits(responseId: Long): EventTraits?
     fun getLastUpdated(): Long?
@@ -42,25 +40,27 @@ internal interface IterateRepository {
 internal class DefaultIterateRepository @JvmOverloads internal constructor(
     context: Context,
     apiKey: String,
-    private var iterateAPi: IterateApi = DefaultIterateApi(apiKey),
+    private var iterateApi: IterateApi = DefaultIterateApi(apiKey),
     private val iterateInMemoryStore: IterateInMemoryStore = DefaultIterateInMemoryStore(),
     private val iterateSharedPrefs: IterateSharedPrefs = DefaultIterateSharedPrefs(context.applicationContext),
 ) : IterateRepository {
 
     override fun embed(embedContext: EmbedContext, callback: ApiResponseCallback<EmbedResults>?) {
-        iterateAPi.embed(embedContext, callback)
+        iterateApi.embed(embedContext, callback)
     }
 
     override fun displayed(survey: Survey) {
-        iterateAPi.displayed(survey)
+        iterateApi.displayed(survey)
     }
 
     override fun dismissed(survey: Survey) {
-        iterateAPi.dismissed(survey)
+        iterateApi.dismissed(survey)
+        iterateInMemoryStore.setDisplayedSurveyResponseId(null)
+        iterateInMemoryStore.setEventTraitsMap(null)
     }
 
     override fun setApiKey(apiKey: String) {
-        iterateAPi = DefaultIterateApi(apiKey)
+        iterateApi = DefaultIterateApi(apiKey)
     }
 
     override fun clearExceptCompanyAuthToken() {
@@ -75,7 +75,8 @@ internal class DefaultIterateRepository @JvmOverloads internal constructor(
     }
 
     override fun getEventTraits(responseId: Long): EventTraits? {
-        return iterateInMemoryStore.getEventTraits(responseId)
+        val eventTraitsMap = iterateInMemoryStore.getEventTraitsMap()
+        return eventTraitsMap?.get(responseId)
     }
 
     override fun getLastUpdated(): Long? {
@@ -99,7 +100,8 @@ internal class DefaultIterateRepository @JvmOverloads internal constructor(
     }
 
     override fun setEventTraits(eventTraits: EventTraits, responseId: Long) {
-        iterateInMemoryStore.setEventTraits(eventTraits, responseId)
+        val eventTraitsMap = mapOf(responseId to eventTraits)
+        iterateInMemoryStore.setEventTraitsMap(eventTraitsMap)
     }
 
     override fun setLastUpdated(lastUpdated: Long) {
