@@ -23,8 +23,6 @@ internal interface IterateRepository {
     fun dismissed(survey: Survey)
     fun setApiKey(apiKey: String)
     fun clearExceptCompanyAuthToken()
-
-    // TODO: remove unused functions
     fun getCompanyAuthToken(): String?
     fun getEventTraits(responseId: Long): EventTraits?
     fun getLastUpdated(): Long?

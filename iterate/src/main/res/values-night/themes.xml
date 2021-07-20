@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.IterateLibrary" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorLayoutBackground">@color/blackLayoutBackground</item>
+        <item name="colorCloseButtonBackground">@color/blackButtonBackground</item>
+        <item name="colorText">@color/white</item>
+    </style>
+</resources>
