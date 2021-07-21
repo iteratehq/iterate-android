@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 import kotlin.coroutines.CoroutineContext
 
 internal interface IterateApi {
@@ -75,10 +75,10 @@ internal class DefaultIterateApi(
         body: T
     ): ApiResponse<R> {
         return withContext(workContext) {
-            var urlConnection: HttpsURLConnection? = null
+            var urlConnection: HttpURLConnection? = null
             try {
                 val url = URL("$apiHost/api/v1$path")
-                urlConnection = (url.openConnection() as HttpsURLConnection).apply {
+                urlConnection = (url.openConnection() as HttpURLConnection).apply {
                     setRequestProperty("Content-Type", "application/json")
                     setRequestProperty("Authorization", "Bearer $apiKey")
                     requestMethod = method.value
