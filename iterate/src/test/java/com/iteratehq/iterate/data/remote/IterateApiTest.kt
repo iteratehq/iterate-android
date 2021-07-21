@@ -2,6 +2,8 @@ package com.iteratehq.iterate.data.remote
 
 import com.iteratehq.iterate.MainCoroutineRule
 import com.iteratehq.iterate.model.Auth
+import com.iteratehq.iterate.model.DismissedResults
+import com.iteratehq.iterate.model.DisplayedResults
 import com.iteratehq.iterate.model.EmbedContext
 import com.iteratehq.iterate.model.EmbedResults
 import com.iteratehq.iterate.model.Prompt
@@ -44,7 +46,7 @@ class IterateApiTest {
     }
 
     @Test
-    fun `should return a correct EmbedResults on successful response`() = runBlocking {
+    fun `should return a correct EmbedResults on successful response when calling embed API`() = runBlocking {
         // Create a CountDownLatch that allows one or more threads to wait until a set of operations
         // being performed in other threads completes
         val latch = CountDownLatch(1)
@@ -53,7 +55,7 @@ class IterateApiTest {
         server.start()
 
         val embedContext = EmbedContext(null, null, null, null, null, null)
-        val iterateApi = DefaultIterateApi("some api key", server.url("/").toString())
+        val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
         iterateApi.embed(
             embedContext,
             object : ApiResponseCallback<EmbedResults> {
@@ -89,9 +91,7 @@ class IterateApiTest {
     }
 
     @Test
-    fun `should return an Exception on failed response`() = runBlocking {
-        // Create a CountDownLatch that allows one or more threads to wait until a set of operations
-        // being performed in other threads completes
+    fun `should return an Exception on failed response when calling embed API`() = runBlocking {
         val latch = CountDownLatch(1)
 
         // Set the HTTP response code to 401
@@ -99,7 +99,7 @@ class IterateApiTest {
         server.start()
 
         val embedContext = EmbedContext(null, null, null, null, null, null)
-        val iterateApi = DefaultIterateApi("some api key", server.url("/").toString())
+        val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
         iterateApi.embed(
             embedContext,
             object : ApiResponseCallback<EmbedResults> {
@@ -113,7 +113,122 @@ class IterateApiTest {
             }
         )
 
-        // Wait until the latch has counted down to zero or timed out
+        val completed = latch.await(3, TimeUnit.SECONDS)
+        assertTrue(completed)
+    }
+
+    @Test
+    fun `should return a correct DisplayedResults on successful response when calling displayed API`() = runBlocking {
+        val latch = CountDownLatch(1)
+
+        server.enqueueResponse("displayed.json", 200)
+        server.start()
+
+        val survey = Survey("id", "companyId", "title", null, null)
+        val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
+        iterateApi.displayed(
+            survey,
+            object : ApiResponseCallback<DisplayedResults> {
+                override fun onSuccess(result: DisplayedResults) {
+                    val expectedDisplayedResults = DisplayedResults(
+                        id = "60f861338718c20001bee688",
+                        lastDisplayed = "2021-07-21T18:02:27.534531401Z"
+                    )
+                    assertEquals(expectedDisplayedResults, result)
+                    latch.countDown()
+                }
+
+                override fun onError(e: Exception) {
+                    throw Exception("This callback should not be called")
+                }
+            }
+        )
+
+        val completed = latch.await(3, TimeUnit.SECONDS)
+        assertTrue(completed)
+    }
+
+    @Test
+    fun `should return an Exception on failed response when calling displayed API`() = runBlocking {
+        val latch = CountDownLatch(1)
+
+        // Set the HTTP response code to 401
+        server.enqueueResponse("displayed.json", 401)
+        server.start()
+
+        val survey = Survey("id", "companyId", "title", null, null)
+        val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
+        iterateApi.displayed(
+            survey,
+            object : ApiResponseCallback<DisplayedResults> {
+                override fun onSuccess(result: DisplayedResults) {
+                    throw Exception("This callback should not be called")
+                }
+
+                override fun onError(e: Exception) {
+                    latch.countDown()
+                }
+            }
+        )
+
+        val completed = latch.await(3, TimeUnit.SECONDS)
+        assertTrue(completed)
+    }
+
+    @Test
+    fun `should return a correct DismissedResults on successful response when calling dismissed API`() = runBlocking {
+        val latch = CountDownLatch(1)
+
+        server.enqueueResponse("dismissed.json", 200)
+        server.start()
+
+        val survey = Survey("id", "companyId", "title", null, null)
+        val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
+        iterateApi.dismissed(
+            survey,
+            object : ApiResponseCallback<DismissedResults> {
+                override fun onSuccess(result: DismissedResults) {
+                    val expectedDismissedResults = DismissedResults(
+                        id = "60f861a68718c20001c00f80",
+                        lastDismissed = "2021-07-21T18:04:22.576376885Z"
+                    )
+                    assertEquals(expectedDismissedResults, result)
+                    latch.countDown()
+                }
+
+                override fun onError(e: Exception) {
+                    throw Exception("This callback should not be called")
+                }
+            }
+        )
+
+        val completed = latch.await(3, TimeUnit.SECONDS)
+        assertTrue(completed)
+    }
+
+    @Test
+    fun `should return an Exception on failed response when calling dismissed API`() = runBlocking {
+        val latch = CountDownLatch(1)
+
+        // Set the HTTP response code to 401
+        server.enqueueResponse("dismissed.json", 401)
+        server.start()
+
+        val survey = Survey("id", "companyId", "title", null, null)
+        val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
+        iterateApi.dismissed(
+            survey,
+            object : ApiResponseCallback<DismissedResults> {
+                override fun onSuccess(result: DismissedResults) {
+                    throw Exception("This callback should not be called")
+                }
+
+                override fun onError(e: Exception) {
+                    latch.countDown()
+                }
+            }
+        )
+
         val completed = latch.await(3, TimeUnit.SECONDS)
         assertTrue(completed)
     }

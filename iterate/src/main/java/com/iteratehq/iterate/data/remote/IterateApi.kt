@@ -3,6 +3,8 @@ package com.iteratehq.iterate.data.remote
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.data.remote.model.ApiResponse
+import com.iteratehq.iterate.model.DismissedResults
+import com.iteratehq.iterate.model.DisplayedResults
 import com.iteratehq.iterate.model.EmbedContext
 import com.iteratehq.iterate.model.EmbedResults
 import com.iteratehq.iterate.model.Survey
@@ -24,12 +26,12 @@ internal interface IterateApi {
 
     fun displayed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>? = null
+        callback: ApiResponseCallback<DisplayedResults>? = null
     )
 
     fun dismissed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>? = null
+        callback: ApiResponseCallback<DismissedResults>? = null
     )
 }
 
@@ -51,7 +53,7 @@ internal class DefaultIterateApi(
 
     override fun displayed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<DisplayedResults>?
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/displayed"
@@ -61,7 +63,7 @@ internal class DefaultIterateApi(
 
     override fun dismissed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<DismissedResults>?
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/dismiss"
