@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupButtonHandlers()
 
+        Iterate.init(this, API_KEY)
+
         Iterate.onResponse { response, question, survey ->
             Log.d("onResponseCallback", "$response $question $survey")
         }
@@ -27,7 +29,10 @@ class MainActivity : AppCompatActivity() {
             Log.d("onEventCallback", "$type $data")
         }
 
-        Iterate.init(this, API_KEY)
+        val isPreviewEnabled = false
+        if (isPreviewEnabled) {
+            Iterate.preview("5efa0121a9fffa0001c70b8d")
+        }
     }
 
     private fun setupButtonHandlers() {
