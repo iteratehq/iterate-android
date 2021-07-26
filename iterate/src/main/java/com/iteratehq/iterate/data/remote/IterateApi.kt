@@ -3,6 +3,8 @@ package com.iteratehq.iterate.data.remote
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.data.remote.model.ApiResponse
+import com.iteratehq.iterate.model.DismissedResults
+import com.iteratehq.iterate.model.DisplayedResults
 import com.iteratehq.iterate.model.EmbedContext
 import com.iteratehq.iterate.model.EmbedResults
 import com.iteratehq.iterate.model.Survey
@@ -12,8 +14,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 import kotlin.coroutines.CoroutineContext
 
 internal interface IterateApi {
@@ -24,12 +26,12 @@ internal interface IterateApi {
 
     fun displayed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>? = null
+        callback: ApiResponseCallback<DisplayedResults>? = null
     )
 
     fun dismissed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>? = null
+        callback: ApiResponseCallback<DismissedResults>? = null
     )
 }
 
@@ -51,7 +53,7 @@ internal class DefaultIterateApi(
 
     override fun displayed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<DisplayedResults>?
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/displayed"
@@ -61,7 +63,7 @@ internal class DefaultIterateApi(
 
     override fun dismissed(
         survey: Survey,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<DismissedResults>?
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/dismiss"
@@ -75,10 +77,10 @@ internal class DefaultIterateApi(
         body: T
     ): ApiResponse<R> {
         return withContext(workContext) {
-            var urlConnection: HttpsURLConnection? = null
+            var urlConnection: HttpURLConnection? = null
             try {
                 val url = URL("$apiHost/api/v1$path")
-                urlConnection = (url.openConnection() as HttpsURLConnection).apply {
+                urlConnection = (url.openConnection() as HttpURLConnection).apply {
                     setRequestProperty("Content-Type", "application/json")
                     setRequestProperty("Authorization", "Bearer $apiKey")
                     requestMethod = method.value
