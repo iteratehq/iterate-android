@@ -35,20 +35,30 @@ import java.util.Date
 object Iterate {
     private lateinit var iterateRepository: IterateRepository
     private lateinit var apiKey: String
+    private var urlScheme: String? = null
 
     /**
      * Minimal initialization that is expected to be called on app boot.
      *
      * @param context Activity or application context
      * @param apiKey Iterate API key
+     * @param urlScheme Optional URL scheme used for the app deep link
      */
     @JvmStatic
-    fun init(context: Context, apiKey: String) {
+    @JvmOverloads
+    fun init(context: Context, apiKey: String, urlScheme: String? = null) {
         this.iterateRepository = DefaultIterateRepository(context.applicationContext, apiKey)
         this.apiKey = apiKey
+        this.urlScheme = urlScheme
         initAuthToken(apiKey)
     }
 
+    /**
+     * Set the user traits to be included when sending events. Commonly called on login.
+     *
+     * @param userTraits The user traits
+     * @throws IllegalStateException Failure when this function is called before calling the [init] function
+     */
     @Throws(IllegalStateException::class)
     @JvmStatic
     fun identify(userTraits: UserTraits) {
@@ -75,6 +85,14 @@ object Iterate {
         }
     }
 
+    /**
+     * Function to bypass all the restrictions imposed when showing a survey. An example is to always
+     * show the survey, even though it is set to be only shown once in a month. This function is for
+     * developer usage only, not for the real usage.
+     *
+     * @param surveyId The survey ID
+     * @throws IllegalStateException Failure when this function is called before calling the [init] function
+     */
     @Throws(IllegalStateException::class)
     @JvmStatic
     fun preview(surveyId: String) {
@@ -84,13 +102,23 @@ object Iterate {
         iterateRepository.setPreviewSurveyId(surveyId)
     }
 
+    /**
+     * Send an event to the server.
+     *
+     * @param eventName The event name
+     * @param eventTraits The event traits
+     * @param fragmentManager Optional FragmentManager for displaying a prompt or survey UI. If the
+     * event triggers a prompt or survey to be shown, but the FragmentManager is not provided, the
+     * prompt or survey will not be displayed.
+     * @throws IllegalStateException Failure when this function is called before calling the [init] function
+     */
     @Throws(IllegalStateException::class)
     @JvmStatic
     @JvmOverloads
     fun sendEvent(
         eventName: String,
         eventTraits: EventTraits?,
-        supportFragmentManager: FragmentManager? = null
+        fragmentManager: FragmentManager? = null
     ) {
         if (!::iterateRepository.isInitialized) {
             throw IllegalStateException("Error calling Iterate.sendEvent(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
@@ -119,7 +147,7 @@ object Iterate {
         val embedContext = EmbedContext(
             app = AppContext(
                 version = BuildConfig.VERSION_NAME,
-                urlScheme = null // TODO: add urlScheme for deep link
+                urlScheme = urlScheme
             ),
             event = EventContext(eventName),
             type = EmbedType.MOBILE,
@@ -145,7 +173,7 @@ object Iterate {
                     }
 
                     result.survey?.let { survey ->
-                        if (supportFragmentManager != null) {
+                        if (fragmentManager != null) {
                             // Generate a unique id (current timestamp) for this survey display so we ensure
                             // we associate the correct event traits with it
                             val responseId = Date().time
@@ -161,10 +189,10 @@ object Iterate {
                                 CoroutineScope(Dispatchers.Default).launch {
                                     val seconds = result.triggers[0].options.seconds ?: 0
                                     delay(seconds * 1000L)
-                                    showSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                                    showSurveyOrPrompt(survey, responseId, fragmentManager)
                                 }
                             } else {
-                                showSurveyOrPrompt(survey, responseId, supportFragmentManager)
+                                showSurveyOrPrompt(survey, responseId, fragmentManager)
                             }
                         }
                     }
@@ -177,6 +205,11 @@ object Iterate {
         )
     }
 
+    /**
+     * Set the callback function to be invoked when there is a response.
+     *
+     * @param userOnResponseCallback The callback function
+     */
     @JvmStatic
     fun onResponse(
         userOnResponseCallback: (
@@ -188,6 +221,12 @@ object Iterate {
         InteractionEventCallbacks.onResponse = userOnResponseCallback
     }
 
+    /**
+     * Set the callback function to be invoked when there is an event. Common examples include the
+     * events when prompt is displayed, survey is completed, or when a prompt or survey is dismissed.
+     *
+     * @param userOnEventCallback The callback function
+     */
     @JvmStatic
     fun onEvent(
         userOnEventCallback: (
@@ -211,12 +250,12 @@ object Iterate {
     private fun showSurveyOrPrompt(
         survey: Survey,
         responseId: Long,
-        supportFragmentManager: FragmentManager
+        fragmentManager: FragmentManager
     ) {
         if (survey.prompt != null) {
-            showPrompt(survey, responseId, supportFragmentManager)
+            showPrompt(survey, responseId, fragmentManager)
         } else {
-            showSurvey(survey, responseId, supportFragmentManager)
+            showSurvey(survey, responseId, fragmentManager)
         }
         iterateRepository.displayed(survey)
     }
@@ -224,7 +263,7 @@ object Iterate {
     private fun showSurvey(
         survey: Survey,
         responseId: Long,
-        supportFragmentManager: FragmentManager
+        fragmentManager: FragmentManager
     ) {
         val authToken =
             iterateRepository.getUserAuthToken() ?: iterateRepository.getCompanyAuthToken()
@@ -238,7 +277,7 @@ object Iterate {
                     dismissed(source, survey, progress)
                 }
             })
-            show(supportFragmentManager, null)
+            show(fragmentManager, null)
         }
 
         InteractionEvents.surveyDisplayed(survey)
@@ -247,7 +286,7 @@ object Iterate {
     private fun showPrompt(
         survey: Survey,
         responseId: Long,
-        supportFragmentManager: FragmentManager
+        fragmentManager: FragmentManager
     ) {
         PromptView.newInstance(survey).apply {
             setListener(object : PromptView.PromptListener {
@@ -259,10 +298,10 @@ object Iterate {
                 }
 
                 override fun onPromptButtonClick(survey: Survey) {
-                    showSurvey(survey, responseId, supportFragmentManager)
+                    showSurvey(survey, responseId, fragmentManager)
                 }
             })
-            show(supportFragmentManager, null)
+            show(fragmentManager, null)
         }
 
         InteractionEvents.promptDisplayed(survey)

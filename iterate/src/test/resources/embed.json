@@ -1,0 +1,159 @@
+{
+  "results": {
+    "auth": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55X2lkIjoiNWRmZTM2OGEwOWI2ZWYwMDAxYjNlNjE4IiwidXNlcl9pZCI6IjYwZjU0ZGIzMjc4NzVjMDAwMTVhNmNjZSIsImlhdCI6MTYyNjg1ODU0Nn0.TaQfldapD0jInoa0zY4vepwlBUun45U_5f-Qf5THq0g"
+    },
+    "survey": {
+      "id": "5efa0121a9fffa0001c70b8d",
+      "channel_id": "5efa0121a9fffa0001c70b8c",
+      "company_id": "5dfe368a09b6ef0001b3e618",
+      "copy": {
+        "answer_saved": {
+          "current": "Answer saved:",
+          "default": "Answer saved:"
+        },
+        "done_button_label": {
+          "current": "Done",
+          "default": "Done"
+        },
+        "email_placeholder_label": {
+          "current": "Email",
+          "default": "Email"
+        },
+        "name_placeholder_label": {
+          "current": "Name",
+          "default": "Name"
+        },
+        "next_button_label": {
+          "current": "Next",
+          "default": "Next"
+        },
+        "nps_detractor_label": {
+          "current": "Not likely",
+          "default": "Not likely"
+        },
+        "nps_promoter_label": {
+          "current": "Very likely",
+          "default": "Very likely"
+        },
+        "other_button_label": {
+          "current": "Other",
+          "default": "Other"
+        },
+        "ranking_help_label": {
+          "current": "Select your choices in order",
+          "default": "Select your choices in order"
+        }
+      },
+      "disable_auto_close": false,
+      "last_feedback_added": "2021-07-16T14:30:14.663Z",
+      "last_notification_sent": "2021-07-16T15:15:27.215Z",
+      "mobile_events": [
+        {
+          "value": "show-survey-button-tapped",
+          "type": "equal"
+        }
+      ],
+      "multiple_responses": true,
+      "multiple_responses_time_limit": 0,
+      "platform": "mobile",
+      "project_id": "5efa0102a9fffa0001c6c7af",
+      "prompt": {
+        "button_text": "Happy to Help",
+        "message": "Help us improve the Iterate iOS SDK by answering a few questions about your ideal use cases",
+        "type": "bubble"
+      },
+      "question_ids": [
+        "5efa0121a9fffa0001c70b8b",
+        "5efb83c019bf6e0001d14101",
+        "5efb83d019bf6e0001d15d45"
+      ],
+      "mobile_rate_limit": 100,
+      "short_code": "8yv2h",
+      "title": "Integration Test Surveys (DO NOT DELETE)",
+      "triggers": [],
+      "type": "general",
+      "unsent_users_count": 0,
+      "web_settings": {
+        "enabled": true
+      },
+      "from_email": "iterate-ios@mail.iteratehq.com",
+      "from_name": "Iterate iOS",
+      "from_email_prefix": "iterate-ios",
+      "reply_to_name": "Iterate iOS",
+      "reply_to": "mike+ios-example-app@iteratehq.com",
+      "color": "#0693e3",
+      "icon": {
+        "original": "https://s3.amazonaws.com/betamax-images/project/default.png"
+      },
+      "subject": "We'd like your feedback",
+      "thank_you_copy": "Thanks! Your feedback is extremely helpful.",
+      "is_importing": false,
+      "is_sending": false,
+      "questions": [
+        {
+          "id": "5efa0121a9fffa0001c70b8b",
+          "branches": [],
+          "company_id": "5dfe368a09b6ef0001b3e618",
+          "question_type": "select",
+          "prompt": "What best describes the current state of your app?",
+          "options_version": 2,
+          "options": {
+            "labels": [
+              {
+                "label": "Just an idea",
+                "value": "just-an-idea"
+              },
+              {
+                "label": "In development",
+                "value": "in-development"
+              },
+              {
+                "label": "Live",
+                "value": "live"
+              }
+            ],
+            "other": false
+          }
+        },
+        {
+          "id": "5efb83c019bf6e0001d14101",
+          "company_id": "5dfe368a09b6ef0001b3e618",
+          "question_type": "multiselect",
+          "prompt": "Which features of iOS will you be using?",
+          "options_version": 2,
+          "options": {
+            "labels": [
+              {
+                "label": "Notifications",
+                "value": "notifications"
+              },
+              {
+                "label": "In-app purchase",
+                "value": "in-app-purchase"
+              },
+              {
+                "label": "Location",
+                "value": "location"
+              }
+            ],
+            "other": true
+          }
+        },
+        {
+          "id": "5efb83d019bf6e0001d15d45",
+          "company_id": "5dfe368a09b6ef0001b3e618",
+          "question_type": "freeform",
+          "prompt": "Describe your application in a few words",
+          "options": {
+            "size": "multi"
+          }
+        }
+      ]
+    },
+    "triggers": [],
+    "tracking": {
+      "last_updated": 1626858546
+    }
+  }
+}

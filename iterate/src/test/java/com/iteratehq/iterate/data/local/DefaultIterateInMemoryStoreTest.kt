@@ -69,4 +69,3 @@ class DefaultIterateInMemoryStoreTest {
         assertNull(outputPreviewSurveyId)
     }
 }
-
