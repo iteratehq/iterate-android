@@ -7,14 +7,18 @@ import com.iteratehq.iterate.model.Response
 import com.iteratehq.iterate.model.Survey
 
 object InteractionEventCallbacks {
-    var onResponse: ((
-        response: Response,
-        question: Question,
-        survey: Survey
-    ) -> Unit)? = null
+    var onResponse: (
+        (
+            response: Response,
+            question: Question,
+            survey: Survey
+        ) -> Unit
+    )? = null
 
-    var onEvent: ((
-        type: InteractionEventTypes,
-        data: InteractionEventData,
-    ) -> Unit)? = null
+    var onEvent: (
+        (
+            type: InteractionEventTypes,
+            data: InteractionEventData,
+        ) -> Unit
+    )? = null
 }
