@@ -1,6 +1,5 @@
 package com.iteratehq.iterate.view
 
-import android.R
 import android.content.DialogInterface
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -11,11 +10,13 @@ import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.InteractionEvents
+import com.iteratehq.iterate.R
 import com.iteratehq.iterate.data.remote.DefaultIterateApi
 import com.iteratehq.iterate.databinding.SurveyViewBinding
 import com.iteratehq.iterate.model.EventMessageTypes
@@ -47,7 +48,7 @@ class SurveyView : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.Theme_Material_NoActionBar)
+        setStyle(STYLE_NORMAL, android.R.style.Theme_Material_NoActionBar)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,6 +94,10 @@ class SurveyView : DialogFragment() {
             "${survey.id}/mobile?${params.joinToString("&")}"
 
         binding.webview.apply {
+            // Set WebView background color with respect to the theme
+            val color = if (isDarkTheme()) R.color.blackLayoutBackground else R.color.white
+            setBackgroundColor(ContextCompat.getColor(requireContext(), color))
+
             settings.javaScriptEnabled = true
 
             webViewClient = object : WebViewClient() {

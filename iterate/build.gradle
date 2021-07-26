@@ -8,8 +8,13 @@ plugins {
 
 ext {
     VERSION_CODE = 1
-    VERSION_NAME = '"1.0.0"'
+    VERSION_NAME = '0.1.0'
+    PUBLISH_ARTIFACT_ID = 'iterate'
+    PUBLISH_GROUP_ID = 'com.iteratehq'
+    PUBLISH_VERSION = VERSION_NAME
 }
+
+apply from: "${rootDir}/scripts/publish-module.gradle"
 
 android {
     compileSdkVersion 30
@@ -20,7 +25,7 @@ android {
         targetSdkVersion 30
         versionCode VERSION_CODE
         versionName VERSION_NAME
-        buildConfigField "String", "VERSION_NAME", VERSION_NAME
+        buildConfigField "String", "VERSION_NAME", "\"{$VERSION_NAME}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
