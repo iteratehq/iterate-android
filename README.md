@@ -1,5 +1,9 @@
 # Iterate for Android
 
+[![build](https://img.shields.io/travis/com/iteratehq/iterate-android)](https://travis-ci.com/github/iteratehq/iterate-android) [![version](https://img.shields.io/github/v/tag/iteratehq/iterate-android?label=version)](https://github.com/iteratehq/iterate-android/releases) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.iteratehq/iterate/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.iteratehq/iterate) [![license](https://img.shields.io/github/license/iteratehq/iterate-android?color=%23000000)](https://github.com/iteratehq/iterate-android/blob/master/LICENSE.txt)
+
+---
+
 [Iterate](https://iteratehq.com) surveys put you directly in touch with your app users to learn how you can change for the better—from your product to your app experience.
 
 Run surveys that are highly targeted, user-friendly, and on-brand. You’ll understand not just what your visitors are doing, but why.
