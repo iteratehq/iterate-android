@@ -20,8 +20,10 @@ import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class IterateRepositoryTest {
 
     private lateinit var repository: IterateRepository
@@ -68,6 +70,7 @@ class IterateRepositoryTest {
     @Test
     fun `should correctly store eventTraits`() {
         doAnswer { invocation ->
+            @Suppress("UNCHECKED_CAST")
             val data = invocation.arguments[0] as Map<Long, EventTraits>
             `when`(iterateInMemoryStore.getEventTraitsMap()).thenReturn(data)
         }.`when`(iterateInMemoryStore).setEventTraitsMap(anyMap())
