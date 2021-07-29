@@ -2,6 +2,8 @@ package com.iteratehq.iterate.view
 
 import android.content.DialogInterface
 import android.content.res.ColorStateList
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -65,11 +67,14 @@ class PromptView : BottomSheetDialogFragment() {
             btnClose.setOnClickListener {
                 dismiss()
             }
+
             txtPrompt.text = survey?.prompt?.message
+
+            val color = survey?.color ?: "#7457be"
+            val backgroundColor =
+                if (isDarkTheme() && survey?.colorDark != null) survey.colorDark else color
             btnPrompt.text = survey?.prompt?.buttonText
-            btnPrompt.backgroundTintList = ColorStateList.valueOf(
-                Color.parseColor(survey?.color ?: "#7457be")
-            )
+            btnPrompt.backgroundTintList = ColorStateList.valueOf(Color.parseColor(backgroundColor))
             btnPrompt.setOnClickListener {
                 promptButtonClicked = true
                 if (survey != null) {
@@ -78,6 +83,10 @@ class PromptView : BottomSheetDialogFragment() {
                 dismiss()
             }
         }
+    }
+
+    private fun isDarkTheme(): Boolean {
+        return (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
     }
 
     companion object {

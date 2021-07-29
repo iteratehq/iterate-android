@@ -95,7 +95,7 @@ class SurveyView : DialogFragment() {
 
         binding.webview.apply {
             // Set WebView background color with respect to the theme
-            val color = if (isDarkTheme()) R.color.blackLayoutBackground else R.color.white
+            val color = if (isDarkTheme()) R.color.blackLight else R.color.white
             setBackgroundColor(ContextCompat.getColor(requireContext(), color))
 
             settings.javaScriptEnabled = true

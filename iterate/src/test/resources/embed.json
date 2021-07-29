@@ -83,6 +83,7 @@
       "reply_to_name": "Iterate iOS",
       "reply_to": "mike+ios-example-app@iteratehq.com",
       "color": "#0693e3",
+      "color_dark": "#ffffff",
       "icon": {
         "original": "https://s3.amazonaws.com/betamax-images/project/default.png"
       },
