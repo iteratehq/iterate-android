@@ -1,8 +1,8 @@
 #!C:/Program\ Files/Git/usr/bin/sh.exe
 
-echo "Running lint check..."
+echo "Running lint format..."
 
-./gradlew ktlintCheck
+./gradlew ktlintFormat
 
 status=$?
 
