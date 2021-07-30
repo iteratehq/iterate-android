@@ -11,5 +11,7 @@ data class Survey(
     val companyId: String,
     val title: String,
     val prompt: Prompt?,
-    val color: String?
+    val color: String?,
+    @SerializedName("color_dark")
+    val colorDark: String?
 ) : Parcelable

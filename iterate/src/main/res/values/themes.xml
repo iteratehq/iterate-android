@@ -2,6 +2,7 @@
     <style name="Theme.IterateLibrary" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorLayoutBackground">@color/white</item>
         <item name="colorCloseButtonBackground">@color/grayButtonBackground</item>
+        <item name="colorButtonText">@color/white</item>
         <item name="colorText">@color/blackText</item>
     </style>
 </resources>

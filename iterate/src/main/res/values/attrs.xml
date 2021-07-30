@@ -2,5 +2,6 @@
 <resources>
     <attr name="colorLayoutBackground" format="color"/>
     <attr name="colorCloseButtonBackground" format="color"/>
+    <attr name="colorButtonText" format="color"/>
     <attr name="colorText" format="color"/>
 </resources>
