@@ -29,7 +29,7 @@ Add the latest `iterate` dependency to your `app/build.gradle` file.
 
 ```Groovy
 dependencies {
-    compile 'com.iteratehq:iterate:<latest_version>'
+    compile "com.iteratehq:iterate:<latest_version>"
 }
 ```
 
@@ -86,7 +86,7 @@ You'll likely want to preview your survey before publishing it so you can test t
 ```Kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
     // ...
-    Iterate.preview('your-survey-id')
+    Iterate.preview("your-survey-id")
 }
 ```
 
@@ -151,10 +151,10 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 | Event             | Data                                                                                                                             | Notes                                                                                                                                                                                                                                                                                                                                             |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 'dismiss'         | `data class InteractionEventDismissData(val progress: ProgressEventMessageData?, val source: InteractionEventSource, val survey: Survey)`<p></p><p></p>`data class ProgressEventMessageData(val completed: Int, val total: Int, val currentQuestion: Question?)` | `progress` contains data about how far the user was in the survey when they dismissed. `completed` is number of questions they've completed (regardless of if they responded to the question or skipped it). `total` is the total number of questions in the survey. `currentQuestion` is the question they were on when they dismissed the survey. |
-| 'displayed'       | `data class InteractionEventDisplayedData(val source: InteractionEventSource, val survey: Survey)`                                                                               |
-| 'response'        | `data class InteractionEventResponseData(val response: Response, val question: Question, val survey: Survey)`                                                                     |
-| 'survey-complete' | `data class InteractionEventSurveyCompleteData(val survey: Survey)`                                                                                                             | Called once when the user reaches the 'thank you' screen                                                                                                                                                                                                                                                                                          |
+| "dismiss"         | `data class InteractionEventDismissData(val progress: ProgressEventMessageData?, val source: InteractionEventSource, val survey: Survey)`<p></p><p></p>`data class ProgressEventMessageData(val completed: Int, val total: Int, val currentQuestion: Question?)` | `progress` contains data about how far the user was in the survey when they dismissed. `completed` is number of questions they've completed (regardless of if they responded to the question or skipped it). `total` is the total number of questions in the survey. `currentQuestion` is the question they were on when they dismissed the survey. |
+| "displayed"       | `data class InteractionEventDisplayedData(val source: InteractionEventSource, val survey: Survey)`                                                                               |
+| "response"        | `data class InteractionEventResponseData(val response: Response, val question: Question, val survey: Survey)`                                                                     |
+| "survey-complete" | `data class InteractionEventSurveyCompleteData(val survey: Survey)`                                                                                                             | Called once when the user reaches the 'thank you' screen                                                                                                                                                                                                                                                                                          |
 
 ## Clearing data
 
