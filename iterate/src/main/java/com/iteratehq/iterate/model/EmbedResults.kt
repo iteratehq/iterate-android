@@ -34,5 +34,6 @@ internal data class TriggerOptions(
 )
 
 internal data class Tracking(
+    @SerializedName("last_updated")
     val lastUpdated: Long
 )
