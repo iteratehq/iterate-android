@@ -25,7 +25,7 @@ android {
         targetSdkVersion 30
         versionCode VERSION_CODE
         versionName VERSION_NAME
-        buildConfigField "String", "VERSION_NAME", "\"{$VERSION_NAME}\""
+        buildConfigField "String", "VERSION_NAME", "\"$VERSION_NAME\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
