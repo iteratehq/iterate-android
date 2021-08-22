@@ -29,7 +29,7 @@ Add the latest `iterate` dependency to your `app/build.gradle` file.
 
 ```Groovy
 dependencies {
-    compile "com.iteratehq:iterate:<latest_version>"
+    implementation "com.iteratehq:iterate:<latest_version>"
 }
 ```
 
