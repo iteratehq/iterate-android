@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         binding.btnTriggerSurvey.setOnClickListener {
             Iterate.sendEvent(
                 "show-survey-button-tapped",
+                supportFragmentManager,
                 EventTraits("currentTime" to Date().time),
-                supportFragmentManager
             )
         }
 
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val API_KEY =
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55X2lkIjoiNWRmZTM2OGEwOWI2ZWYwMDAxYjNlNjE4IiwiaWF0IjoxNTc2OTQxMTk0fQ.QBWr2goMwOngVhi6wY9sdFAKEvBGmn-JRDKstVMFh6M"
-        private const val EMAIL = "exampl@email.com"
+        private const val EMAIL = "example@email.com"
         private const val EXTERNAL_ID = "user-123"
         private const val SURVEY_ID = "5efa0121a9fffa0001c70b8d"
     }

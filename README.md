@@ -68,7 +68,7 @@ class ActivityFeedActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // ...
-        Iterate.sendEvent("viewed-activity-feed")
+        Iterate.sendEvent("viewed-activity-feed", supportFragmentManager)
     }
 }
 ```
@@ -115,6 +115,7 @@ You can also associate 'response properties' with the user's responses to a spec
 fun onActivityFeedViewed() {
     Iterate.sendEvent(
         "viewed-activity-feed",
+        supportFragmentManager,
         EventTraits(
             "selected_product_id" to 12345,
             "timestamp" to 140002658477
