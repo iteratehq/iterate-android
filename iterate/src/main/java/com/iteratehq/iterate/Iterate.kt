@@ -106,10 +106,8 @@ object Iterate {
      * Send an event to the server.
      *
      * @param eventName The event name
-     * @param eventTraits The event traits
-     * @param fragmentManager Optional FragmentManager for displaying a prompt or survey UI. If the
-     * event triggers a prompt or survey to be shown, but the FragmentManager is not provided, the
-     * prompt or survey will not be displayed.
+     * @param fragmentManager FragmentManager for displaying a prompt or survey UI.
+     * @param eventTraits Optional The event traits
      * @throws IllegalStateException Failure when this function is called before calling the [init] function
      */
     @Throws(IllegalStateException::class)
@@ -117,8 +115,8 @@ object Iterate {
     @JvmOverloads
     fun sendEvent(
         eventName: String,
-        eventTraits: EventTraits?,
-        fragmentManager: FragmentManager? = null
+        fragmentManager: FragmentManager,
+        eventTraits: EventTraits? = null,
     ) {
         if (!::iterateRepository.isInitialized) {
             throw IllegalStateException("Error calling Iterate.sendEvent(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
@@ -173,27 +171,25 @@ object Iterate {
                     }
 
                     result.survey?.let { survey ->
-                        if (fragmentManager != null) {
-                            // Generate a unique id (current timestamp) for this survey display so we ensure
-                            // we associate the correct event traits with it
-                            val responseId = Date().time
-                            if (eventTraits != null) {
-                                iterateRepository.setEventTraits(eventTraits, responseId)
-                            }
+                        // Generate a unique id (current timestamp) for this survey display so we ensure
+                        // we associate the correct event traits with it
+                        val responseId = Date().time
+                        if (eventTraits != null) {
+                            iterateRepository.setEventTraits(eventTraits, responseId)
+                        }
 
-                            // If the survey has a timer trigger, wait that number of seconds before showing the survey
-                            if (
-                                !result.triggers.isNullOrEmpty() &&
-                                result.triggers[0].type == TriggerType.SECONDS
-                            ) {
-                                CoroutineScope(Dispatchers.Default).launch {
-                                    val seconds = result.triggers[0].options.seconds ?: 0
-                                    delay(seconds * 1000L)
-                                    showSurveyOrPrompt(survey, responseId, fragmentManager)
-                                }
-                            } else {
+                        // If the survey has a timer trigger, wait that number of seconds before showing the survey
+                        if (
+                            !result.triggers.isNullOrEmpty() &&
+                            result.triggers[0].type == TriggerType.SECONDS
+                        ) {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                val seconds = result.triggers[0].options.seconds ?: 0
+                                delay(seconds * 1000L)
                                 showSurveyOrPrompt(survey, responseId, fragmentManager)
                             }
+                        } else {
+                            showSurveyOrPrompt(survey, responseId, fragmentManager)
                         }
                     }
                 }
