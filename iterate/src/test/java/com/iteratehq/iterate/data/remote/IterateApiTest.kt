@@ -75,7 +75,7 @@ class IterateApiTest {
                                 colorDark = "#ffffff"
                             ),
                             triggers = emptyList(),
-                            tracking = Tracking(0)
+                            tracking = result.tracking
                         )
                         assertEquals(expectedEmbedResults, result)
                         latch.countDown()
