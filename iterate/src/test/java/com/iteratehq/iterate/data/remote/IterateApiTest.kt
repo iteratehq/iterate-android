@@ -8,7 +8,6 @@ import com.iteratehq.iterate.model.EmbedContext
 import com.iteratehq.iterate.model.EmbedResults
 import com.iteratehq.iterate.model.Prompt
 import com.iteratehq.iterate.model.Survey
-import com.iteratehq.iterate.model.Tracking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockWebServer
