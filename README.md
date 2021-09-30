@@ -50,7 +50,7 @@ import com.iteratehq.iterate.Iterate
 
 class IterateApp : Application() {
 
-    fun onCreate() {
+    override fun onCreate() {
         // ...
         Iterate.init(this, API_KEY)
     }
