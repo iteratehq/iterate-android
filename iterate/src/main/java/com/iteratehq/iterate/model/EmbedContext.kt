@@ -1,7 +1,9 @@
 package com.iteratehq.iterate.model
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class EmbedContext(
     val app: AppContext?,
     val event: EventContext?,
@@ -12,6 +14,7 @@ data class EmbedContext(
     val userTraits: UserTraitsContext?
 )
 
+@Keep
 enum class EmbedType(val value: String) {
     @SerializedName("mobile")
     MOBILE("mobile")
