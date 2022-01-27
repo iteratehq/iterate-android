@@ -40,9 +40,10 @@ internal interface IterateRepository {
 internal class DefaultIterateRepository @JvmOverloads internal constructor(
     context: Context,
     apiKey: String,
+    useEncryptedSharedPreferences: Boolean = true,
     private var iterateApi: IterateApi = DefaultIterateApi(apiKey),
     private val iterateInMemoryStore: IterateInMemoryStore = DefaultIterateInMemoryStore(),
-    private val iterateSharedPrefs: IterateSharedPrefs = DefaultIterateSharedPrefs(context.applicationContext),
+    private val iterateSharedPrefs: IterateSharedPrefs = DefaultIterateSharedPrefs(context.applicationContext, useEncryptedSharedPreferences),
 ) : IterateRepository {
 
     override fun embed(embedContext: EmbedContext, callback: ApiResponseCallback<EmbedResults>?) {

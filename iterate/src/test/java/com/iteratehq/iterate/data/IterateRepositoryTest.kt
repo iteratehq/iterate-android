@@ -45,6 +45,7 @@ class IterateRepositoryTest {
         repository = DefaultIterateRepository(
             context,
             "API_KEY",
+            true,
             iterateApi,
             iterateInMemoryStore,
             iterateSharedPrefs

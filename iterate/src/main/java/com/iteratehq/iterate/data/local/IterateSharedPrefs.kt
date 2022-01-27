@@ -19,20 +19,25 @@ internal interface IterateSharedPrefs {
 }
 
 internal class DefaultIterateSharedPrefs(
-    private val context: Context
+    private val context: Context,
+    useEncryptedSharedPreferences: Boolean = true
 ) : IterateSharedPrefs {
 
     private val prefs: SharedPreferences by lazy {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        EncryptedSharedPreferences.create(
-            context,
-            PREFS_FILE,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        if (useEncryptedSharedPreferences) {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            EncryptedSharedPreferences.create(
+                context,
+                ENCRYPTED_PREFS_FILE,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } else {
+            context.getSharedPreferences(PLAIN_PREFS_FILE, Context.MODE_PRIVATE)
+        }
     }
 
     override fun clear() {
@@ -79,7 +84,8 @@ internal class DefaultIterateSharedPrefs(
     }
 
     private companion object {
-        private const val PREFS_FILE = "IterateSharedPrefs"
+        private const val ENCRYPTED_PREFS_FILE = "EncryptedIterateSharedPrefs"
+        private const val PLAIN_PREFS_FILE = "PlainIterateSharedPrefs"
         private const val LAST_UPDATED = "LAST_UPDATED"
         private const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         private const val USER_TRAITS = "USER_TRAITS"

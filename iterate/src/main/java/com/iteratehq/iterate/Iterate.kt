@@ -43,11 +43,21 @@ object Iterate {
      * @param context Activity or application context
      * @param apiKey Iterate API key
      * @param urlScheme Optional URL scheme used for the app deep link
+     * @param useEncryptedSharedPreferences Option to use EncryptedSharedPreferences, default to true
      */
     @JvmStatic
     @JvmOverloads
-    fun init(context: Context, apiKey: String, urlScheme: String? = null) {
-        this.iterateRepository = DefaultIterateRepository(context.applicationContext, apiKey)
+    fun init(
+        context: Context,
+        apiKey: String,
+        urlScheme: String? = null,
+        useEncryptedSharedPreferences: Boolean = true
+    ) {
+        this.iterateRepository = DefaultIterateRepository(
+            context.applicationContext,
+            apiKey,
+            useEncryptedSharedPreferences
+        )
         this.apiKey = apiKey
         this.urlScheme = urlScheme
         initAuthToken(apiKey)
