@@ -172,6 +172,14 @@ fun logout() {
 
 By default surveys are only shown once per person and user's can only see at most 1 survey every 72 hours (which is configurable). You can learn more about how [eligibility and frequency works](https://help.iteratehq.com/en/articles/2835008-survey-eligibility-and-frequency).
 
+## Using Encrypted Storage
+
+By default we make use of EncryptedSharedPreferences to store the user's API key as well as a few other pieces of data (timestamp they last saw a survey, etc). There is a known rare bug in Android where certain devices will corrupt the master key, causing the following runtime exception to be thrown `java.security.KeyStoreException: the master key android-keystore://_androidx_security_master_key_ exists but is unusable`. More on the bug [here](https://github.com/google/tink/issues/535) and [here](https://issuetracker.google.com/issues/176215143). The solution is to use the unencrypted SharedPreferences instead of EncryptedSharedPreferences. We've decided to continue to use EncryptedSharedPreferences by default since the bug effects a very small number of devices and prefer to encrypt all data when possible, however if you wish to use the unencrypted SharedPreferences to avoid this crash you can do so by initializing Iterate with the `useEncryptedSharedPreferences = false` parameter as shown below.
+
+```Kotlin
+Iterate.init(this, API_KEY, useEncryptedSharedPreferences = false)
+```
+
 ## Troubleshooting
 
 If you have any issues you can head over to our [help center](https://help.iteratehq.com) to search for an answer or chat with our support team.
