@@ -1,6 +1,7 @@
 package com.iteratehq.iterate.view
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
@@ -104,6 +106,24 @@ class SurveyView : DialogFragment() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     binding.progressBar.isVisible = false
+                }
+
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    val isIterateRequest = "${request?.url?.scheme}://${request?.url?.host}" == DefaultIterateApi.DEFAULT_HOST
+                    if (isIterateRequest) {
+                        return false
+                    }
+
+                    if (request?.url != null) {
+                        val intent = Intent(Intent.ACTION_VIEW, request.url)
+                        view?.context?.startActivity(intent)
+                        return true
+                    } else {
+                        return false
+                    }
                 }
             }
 
