@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.1](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.1)
+
+Released on 2022-09-15.
+
+**Fixed**
+
+- Fixed an issue that prevented external links in survey copy from opening
+- Fix crash on show survey screen when fragment manager is destroyed
+
 ## [1.1.0](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.0)
 
 Released on 2022-02-01.
