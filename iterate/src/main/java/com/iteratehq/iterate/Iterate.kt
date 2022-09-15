@@ -283,7 +283,13 @@ object Iterate {
                     dismissed(source, survey, progress)
                 }
             })
-            show(fragmentManager, null)
+            try {
+                if (!fragmentManager.isDestroyed) {
+                    show(fragmentManager, null)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         InteractionEvents.surveyDisplayed(survey)
@@ -307,7 +313,13 @@ object Iterate {
                     showSurvey(survey, responseId, fragmentManager)
                 }
             })
-            show(fragmentManager, null)
+            try {
+                if (!fragmentManager.isDestroyed) {
+                    show(fragmentManager, null)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         InteractionEvents.promptDisplayed(survey)
