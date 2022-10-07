@@ -36,6 +36,8 @@ object Iterate {
     private lateinit var iterateRepository: IterateRepository
     private lateinit var apiKey: String
     private var urlScheme: String? = null
+    private var surveyTextFontAssetPath: String? = null
+    private var buttonFontAssetPath: String? = null
 
     /**
      * Minimal initialization that is expected to be called on app boot.
@@ -43,6 +45,8 @@ object Iterate {
      * @param context Activity or application context
      * @param apiKey Iterate API key
      * @param urlScheme Optional URL scheme used for the app deep link
+     * @param surveyTextFontAssetPath Optional path to a font file relative to the assets folder to use for question prompts and other survey text
+     * @param buttonFontAssetPath Optional path to a font file relative to the assets folder to use for survey interface buttons
      * @param useEncryptedSharedPreferences Option to use EncryptedSharedPreferences, default to true
      */
     @JvmStatic
@@ -51,7 +55,9 @@ object Iterate {
         context: Context,
         apiKey: String,
         urlScheme: String? = null,
-        useEncryptedSharedPreferences: Boolean = true
+        surveyTextFontAssetPath: String? = null,
+        buttonFontAssetPath: String? = null,
+        useEncryptedSharedPreferences: Boolean = true,
     ) {
         this.iterateRepository = DefaultIterateRepository(
             context.applicationContext,
@@ -60,6 +66,8 @@ object Iterate {
         )
         this.apiKey = apiKey
         this.urlScheme = urlScheme
+        this.surveyTextFontAssetPath = surveyTextFontAssetPath
+        this.buttonFontAssetPath = buttonFontAssetPath
         initAuthToken(apiKey)
     }
 
@@ -274,7 +282,7 @@ object Iterate {
         val authToken =
             iterateRepository.getUserAuthToken() ?: iterateRepository.getCompanyAuthToken()
         val eventTraits = iterateRepository.getEventTraits(responseId)
-        SurveyView.newInstance(survey, authToken, eventTraits).apply {
+        SurveyView.newInstance(survey, authToken, eventTraits, this.surveyTextFontAssetPath, this.buttonFontAssetPath).apply {
             setListener(object : SurveyView.SurveyListener {
                 override fun onDismiss(
                     source: InteractionEventSource,
@@ -300,7 +308,7 @@ object Iterate {
         responseId: Long,
         fragmentManager: FragmentManager
     ) {
-        PromptView.newInstance(survey).apply {
+        PromptView.newInstance(survey, this.surveyTextFontAssetPath, this.buttonFontAssetPath).apply {
             setListener(object : PromptView.PromptListener {
                 override fun onDismiss(
                     source: InteractionEventSource,

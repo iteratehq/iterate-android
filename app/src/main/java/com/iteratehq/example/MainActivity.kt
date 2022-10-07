@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupButtonHandlers()
 
-        Iterate.init(this, API_KEY)
+        Iterate.init(this, API_KEY, null, "Merriweather-Regular.ttf", "WorkSans-VariableFont_wght.ttf")
 
         Iterate.onResponse { response, question, survey ->
             Log.d("onResponseCallback", "$response $question $survey")

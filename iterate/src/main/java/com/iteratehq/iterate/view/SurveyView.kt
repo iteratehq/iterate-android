@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,11 @@ import com.iteratehq.iterate.model.InteractionEventSource
 import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.ResponseEventMessageData
 import com.iteratehq.iterate.model.Survey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import java.net.URL
 
 class SurveyView : DialogFragment() {
 
@@ -71,6 +77,8 @@ class SurveyView : DialogFragment() {
         val params = mutableListOf<String>()
         val authToken = arguments?.getString(AUTH_TOKEN)
         val eventTraits = arguments?.getSerializable(EVENT_TRAITS) as EventTraits?
+        val surveyTextFont = arguments?.getString(SURVEY_TEXT_FONT)
+        val buttonFont = arguments?.getString(BUTTON_FONT)
 
         // Add the auth token
         if (authToken != null) {
@@ -91,6 +99,14 @@ class SurveyView : DialogFragment() {
         // Add theme
         val theme = if (isDarkTheme()) "dark" else "light"
         params.add("theme=$theme")
+        params.add("absoluteURLs=true")
+
+        if (surveyTextFont != null) {
+            params.add("surveyTextFontPath=file:///android_asset/$surveyTextFont")
+        }
+        if (buttonFont != null) {
+            params.add("buttonFontPath=file:///android_asset/$buttonFont")
+        }
 
         val url = "${DefaultIterateApi.DEFAULT_HOST}/${survey.companyId}/" +
             "${survey.id}/mobile?${params.joinToString("&")}"
@@ -140,7 +156,31 @@ class SurveyView : DialogFragment() {
                 "ReactNativeWebView"
             )
 
-            loadUrl(url)
+            var response = ""
+            var error: Exception? = null
+            runBlocking {
+                try {
+                    withTimeout(5000) {
+                        launch(Dispatchers.IO) {
+                            response = URL(url).readText()
+                        }
+                    }
+                } catch (e:Exception) {
+                    error = e
+                }
+            }
+
+            if (error == null) {
+                loadDataWithBaseURL(
+                    "file:///?auth_token=" + authToken,
+                    response,
+                    "text/html",
+                    "utf-8",
+                    ""
+                )
+            } else {
+                dismiss()
+            }
         }
     }
 
@@ -182,16 +222,22 @@ class SurveyView : DialogFragment() {
         private const val SURVEY = "survey"
         private const val AUTH_TOKEN = "auth_token"
         private const val EVENT_TRAITS = "event_traits"
+        private const val SURVEY_TEXT_FONT = "survey_text_font"
+        private const val BUTTON_FONT = "button_font"
 
         fun newInstance(
             survey: Survey,
             authToken: String?,
-            eventTraits: EventTraits?
+            eventTraits: EventTraits?,
+            surveyTextFont: String? = null,
+            buttonFont: String? = null
         ): SurveyView {
             val bundle = Bundle().apply {
                 putParcelable(SURVEY, survey)
                 putString(AUTH_TOKEN, authToken)
                 putSerializable(EVENT_TRAITS, eventTraits)
+                putString(SURVEY_TEXT_FONT, surveyTextFont)
+                putString(BUTTON_FONT, buttonFont)
             }
             return SurveyView().apply {
                 arguments = bundle
