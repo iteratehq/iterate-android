@@ -94,6 +94,18 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 When implementing Iterate for the first time, we encourage you to implement events for _all_ of your core use cases which you may want to target surveys to in the future. e.g. sign up, purchased, viewed X screen, tapped notification, etc. This way you can easily launch new surveys targeting these events without needing to instrument a new event each time.
 
+## Custom fonts
+
+Custom fonts can be used in the Iterate survey view by adding the font files to your assets folder, and passing their paths (relative to `/assets`) to the `Iterate.init` method, like this:
+
+```Kotlin
+Iterate.init(this, API_KEY, null, "Merriweather-Regular.ttf", "WorkSans-VariableFont_wght.ttf")
+```
+
+The font specified in the `buttonFontName` parameter will be used in all survey interface buttons (question responses, previous / next buttons, etc). The font specified in `surveyTextFontName` will be used for all other survey text (question prompts, explanatory copy, etc).
+
+True Type fonts and Open Type Fonts are supported.
+
 ## Associating data with a user
 
 Using the `identify` method, you can easily add 'user properties' to a user that can be used to target surveys to them and associate the information with all of their future responses. We recommend setting the `external_id` (needs to be a string) which represents your internal id for the user, this allows us to associate this user across multiple platforms and sessions'

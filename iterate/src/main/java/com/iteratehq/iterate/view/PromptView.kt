@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -63,17 +64,31 @@ class PromptView : BottomSheetDialogFragment() {
 
     private fun setupView() {
         val survey = arguments?.getParcelable<Survey>(SURVEY)
+        val surveyTextFont = arguments?.getString(SURVEY_TEXT_FONT)
+        val buttonFont = arguments?.getString(BUTTON_FONT)
+
         with(binding) {
             btnClose.setOnClickListener {
                 dismiss()
             }
 
             txtPrompt.text = survey?.prompt?.message
+            if (surveyTextFont != null) {
+                txtPrompt.setTypeface(
+                    Typeface.createFromAsset(
+                        requireContext().assets,
+                        surveyTextFont
+                    )
+                )
+            }
 
             val color = survey?.color ?: "#7457be"
             val backgroundColor =
                 if (isDarkTheme() && survey?.colorDark != null) survey.colorDark else color
             btnPrompt.text = survey?.prompt?.buttonText
+            if (buttonFont != null) {
+                btnPrompt.setTypeface(Typeface.createFromAsset(requireContext().assets, buttonFont))
+            }
             btnPrompt.backgroundTintList = ColorStateList.valueOf(Color.parseColor(backgroundColor))
             btnPrompt.setOnClickListener {
                 promptButtonClicked = true
@@ -91,10 +106,14 @@ class PromptView : BottomSheetDialogFragment() {
 
     companion object {
         private const val SURVEY = "survey"
+        private const val SURVEY_TEXT_FONT = "survey_text_font"
+        private const val BUTTON_FONT = "button_font"
 
-        fun newInstance(survey: Survey): PromptView {
+        fun newInstance(survey: Survey, surveyTextFont: String? = null, buttonFont: String? = null): PromptView {
             val bundle = Bundle().apply {
                 putParcelable(SURVEY, survey)
+                putString(SURVEY_TEXT_FONT, surveyTextFont)
+                putString(BUTTON_FONT, buttonFont)
             }
             return PromptView().apply {
                 arguments = bundle
