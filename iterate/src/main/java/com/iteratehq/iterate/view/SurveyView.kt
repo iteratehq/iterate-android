@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -165,7 +164,7 @@ class SurveyView : DialogFragment() {
                             response = URL(url).readText()
                         }
                     }
-                } catch (e:Exception) {
+                } catch (e: Exception) {
                     error = e
                 }
             }
