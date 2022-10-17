@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.2](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.2)
+
+Released on 2022-10-17.
+
+**Added**
+
+Added support for custom fonts in survey UI
+
 ## [1.1.1](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.1)
 
 Released on 2022-09-15.
