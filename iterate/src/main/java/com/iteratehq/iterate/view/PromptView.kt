@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.view.ContextThemeWrapper
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.iteratehq.iterate.R
 import com.iteratehq.iterate.databinding.PromptViewBinding
@@ -42,6 +43,12 @@ class PromptView : BottomSheetDialogFragment() {
         // Inflate the layout using the cloned inflater, not the default inflater
         binding = PromptViewBinding.inflate(clonedInflater)
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val behavior = BottomSheetBehavior.from(requireView().parent as View)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
