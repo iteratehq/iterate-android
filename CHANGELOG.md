@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.3](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.3)
+
+Released on 2022-11-29.
+
+**Fixed**
+
+Fixed an issue where the survey prompt sheet was initially collapsed when displayed in landscape mode.
+
+
 ## [1.1.2](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.2)
 
 Released on 2022-10-17.
