@@ -84,7 +84,7 @@ class SurveyView : DialogFragment() {
             params.add("auth_token=$authToken")
         }
 
-        // Add the auth token
+        // Add the event traits
         eventTraits?.forEach { (key, value) ->
             if (value is Boolean) {
                 params.add("response_boolean_$key=$value")
@@ -109,7 +109,6 @@ class SurveyView : DialogFragment() {
 
         val url = "${DefaultIterateApi.DEFAULT_HOST}/${survey.companyId}/" +
             "${survey.id}/mobile?${params.joinToString("&")}"
-
         binding.webview.apply {
             // Set WebView background color with respect to the theme
             val color = if (isDarkTheme()) R.color.blackLight else R.color.white
@@ -171,7 +170,7 @@ class SurveyView : DialogFragment() {
 
             if (error == null) {
                 loadDataWithBaseURL(
-                    "file:///?auth_token=" + authToken,
+                    "file:///?${params.joinToString("&")}",
                     response,
                     "text/html",
                     "utf-8",
