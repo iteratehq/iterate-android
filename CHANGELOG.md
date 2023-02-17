@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.4](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.4)
+
+Released on 2023-02-17.
+
+**Fixed**
+
+Fixed an issue where response properties were not sent in 1.1.2
+
 ## [1.1.3](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.3)
 
 Released on 2022-11-29.
