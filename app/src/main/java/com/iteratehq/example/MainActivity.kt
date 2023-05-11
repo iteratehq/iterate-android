@@ -8,7 +8,6 @@ import com.iteratehq.iterate.Iterate
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.UserTraits
 import java.time.LocalDateTime
-import java.util.Date
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             Iterate.sendEvent(
                 "show-survey-button-tapped",
                 supportFragmentManager,
-                EventTraits("currentTime" to Date().time),
+                EventTraits("currentDate" to LocalDateTime.now()),
             )
         }
 
