@@ -7,6 +7,7 @@ import com.iteratehq.example.databinding.ActivityMainBinding
 import com.iteratehq.iterate.Iterate
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.UserTraits
+import java.time.LocalDateTime
 import java.util.Date
 
 class MainActivity : AppCompatActivity() {
@@ -48,7 +49,8 @@ class MainActivity : AppCompatActivity() {
             Iterate.identify(
                 UserTraits(
                     "external_id" to EXTERNAL_ID,
-                    "email" to EMAIL
+                    "email" to EMAIL,
+                    "date_joined" to LocalDateTime.of(2023, 1, 1, 1, 1, 1)
                 )
             )
         }

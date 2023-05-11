@@ -5,8 +5,17 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.model.UserTraits
+import java.lang.reflect.Type
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 internal interface IterateSharedPrefs {
     fun clear()
@@ -61,7 +70,8 @@ internal class DefaultIterateSharedPrefs(
     override fun getUserTraits(): UserTraits? {
         val userTraitsJson = prefs.getString(USER_TRAITS, "")
         val type = object : TypeToken<UserTraits?>() {}.type
-        return Gson().fromJson(userTraitsJson, type)
+        val userTraits: UserTraits? = Gson().fromJson(userTraitsJson, type)
+        return userTraits
     }
 
     override fun setLastUpdated(lastUpdated: Long) {
@@ -77,7 +87,11 @@ internal class DefaultIterateSharedPrefs(
     }
 
     override fun setUserTraits(userTraits: UserTraits) {
-        val userTraitsJson = Gson().toJson(userTraits)
+        val gson = GsonBuilder()
+            .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+            .create()
+
+        val userTraitsJson = gson.toJson(userTraits)
         prefs.edit()
             .putString(USER_TRAITS, userTraitsJson)
             .apply()
@@ -89,5 +103,18 @@ internal class DefaultIterateSharedPrefs(
         private const val LAST_UPDATED = "LAST_UPDATED"
         private const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         private const val USER_TRAITS = "USER_TRAITS"
+    }
+}
+
+internal class LocalDateTimeSerializer : JsonSerializer<LocalDateTime> {
+    override fun serialize(
+        src: LocalDateTime?,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
+        return if (src == null) JsonNull.INSTANCE else JsonObject().apply {
+            addProperty("type", "date")
+            addProperty("value", src.toEpochSecond(ZoneOffset.UTC))
+        }
     }
 }
