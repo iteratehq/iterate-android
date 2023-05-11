@@ -17,12 +17,12 @@ ext {
 apply from: "${rootDir}/scripts/publish-module.gradle"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion 26
+        targetSdkVersion 31
         buildConfigField "String", "VERSION_NAME", "\"$VERSION_NAME\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
