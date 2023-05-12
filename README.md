@@ -10,7 +10,7 @@ Run surveys that are highly targeted, user-friendly, and on-brand. You’ll unde
 
 ## Requirements
 
-This SDK requires Android 5.0 Lollipop (API level 21) or higher.
+This SDK requires Android 8.0 Oreo (API level 26) or higher.
 
 ## Install
 
@@ -115,7 +115,8 @@ fun onLoginSuccessful() {
     Iterate.identify(
         UserTraits(
             "external_id" to "12abc34",
-            "email" to "example@email.com"
+            "email" to "example@email.com",
+            "date_joined" to LocalDateTime.of(2023, 1, 1, 1, 1, 1)
         )
     )
 }
@@ -129,8 +130,7 @@ fun onActivityFeedViewed() {
         "viewed-activity-feed",
         supportFragmentManager,
         EventTraits(
-            "selected_product_id" to 12345,
-            "timestamp" to 140002658477
+            "selected_product_id" to 12345
         )
     )
 }
