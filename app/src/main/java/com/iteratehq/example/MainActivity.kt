@@ -7,7 +7,7 @@ import com.iteratehq.example.databinding.ActivityMainBinding
 import com.iteratehq.iterate.Iterate
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.UserTraits
-import java.util.Date
+import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             Iterate.sendEvent(
                 "show-survey-button-tapped",
                 supportFragmentManager,
-                EventTraits("currentTime" to Date().time),
+                EventTraits("currentDate" to LocalDateTime.now()),
             )
         }
 
@@ -48,7 +48,8 @@ class MainActivity : AppCompatActivity() {
             Iterate.identify(
                 UserTraits(
                     "external_id" to EXTERNAL_ID,
-                    "email" to EMAIL
+                    "email" to EMAIL,
+                    "date_joined" to LocalDateTime.of(2023, 1, 1, 1, 1, 1)
                 )
             )
         }
