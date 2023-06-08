@@ -10,7 +10,7 @@ Run surveys that are highly targeted, user-friendly, and on-brand. You’ll unde
 
 ## Requirements
 
-This SDK requires Android 8.0 Oreo (API level 26) or higher.
+This SDK requires Android 5.0 Lollipop (API level 21) or higher.
 
 ## Install
 
@@ -30,6 +30,18 @@ Add the latest `iterate` dependency to your `app/build.gradle` file.
 ```Groovy
 dependencies {
     implementation "com.iteratehq:iterate:<latest_version>"
+}
+```
+
+If you're using any API levels before 26, you'll need to enable desugaring
+
+```Groovy
+compileOptions {
+    coreLibraryDesugaringEnabled true
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.0'
 }
 ```
 

@@ -21,7 +21,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 26
+        minSdkVersion 21
         targetSdkVersion 31
         buildConfigField "String", "VERSION_NAME", "\"$VERSION_NAME\""
 
