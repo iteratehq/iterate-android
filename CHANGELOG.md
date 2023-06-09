@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.6](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.6)
+
+Released on 2023-06-09.
+
+**Fixed**
+
+Fixed an issue causing the close icon not to render in the latest Compose UI
+
 ## [1.1.5](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.5)
 
 Released on 2023-05-12.
