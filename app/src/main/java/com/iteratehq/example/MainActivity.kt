@@ -7,8 +7,8 @@ import com.iteratehq.example.databinding.ActivityMainBinding
 import com.iteratehq.iterate.Iterate
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.UserTraits
-import java.util.Date
 import java.util.Calendar
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
 
