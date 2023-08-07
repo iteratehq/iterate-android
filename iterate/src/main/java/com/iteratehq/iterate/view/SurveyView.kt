@@ -32,8 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.net.URL
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.util.Date
 
 class SurveyView : DialogFragment() {
 
@@ -92,8 +91,8 @@ class SurveyView : DialogFragment() {
                 params.add("response_boolean_$key=$value")
             } else if (value is Long || value is Int) {
                 params.add("response_number_$key=$value")
-            } else if (value is LocalDateTime) {
-                val timestamp = value.toEpochSecond(ZoneOffset.UTC)
+            } else if (value is Date) {
+                val timestamp = value.getTime() / 1000
                 params.add("response_date_$key=$timestamp")
             } else {
                 params.add("response_$key=$value")
