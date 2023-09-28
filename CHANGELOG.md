@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.7](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.7)
+
+Released on 2023-09-28.
+
+**Fixed**
+
+Removes usage of java.time.LocalDateTime to restore support for API versions 21–26. 
+
 ## [1.1.6](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.6)
 
 Released on 2023-06-09.
