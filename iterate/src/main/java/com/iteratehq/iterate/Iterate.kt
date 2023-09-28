@@ -137,7 +137,6 @@ object Iterate {
         eventTraits: EventTraits? = null,
     ) {
         if (android.os.Build.VERSION.SDK_INT <= 24) {
-            Log.e("sendEvent", "The Iterate SDK requires an Android SDK version > 24.")
             return
         }
 
