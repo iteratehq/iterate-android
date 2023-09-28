@@ -7,7 +7,8 @@ import com.iteratehq.example.databinding.ActivityMainBinding
 import com.iteratehq.iterate.Iterate
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.UserTraits
-import java.time.LocalDateTime
+import java.util.Calendar
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,16 +41,26 @@ class MainActivity : AppCompatActivity() {
             Iterate.sendEvent(
                 "show-survey-button-tapped",
                 supportFragmentManager,
-                EventTraits("currentDate" to LocalDateTime.now()),
+                EventTraits("currentDate" to Date()),
             )
         }
 
         binding.btnLogin.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.YEAR, 2023)
+            calendar.set(Calendar.MONTH, Calendar.JANUARY) // Month is 0-based
+            calendar.set(Calendar.DAY_OF_MONTH, 1)
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+
+            val januaryFirst2023: Date = calendar.time
+
             Iterate.identify(
                 UserTraits(
                     "external_id" to EXTERNAL_ID,
                     "email" to EMAIL,
-                    "date_joined" to LocalDateTime.of(2023, 1, 1, 1, 1, 1)
+                    "date_joined" to januaryFirst2023
                 )
             )
         }

@@ -14,8 +14,7 @@ import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import com.iteratehq.iterate.model.UserTraits
 import java.lang.reflect.Type
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.util.Date
 
 internal interface IterateSharedPrefs {
     fun clear()
@@ -88,7 +87,7 @@ internal class DefaultIterateSharedPrefs(
 
     override fun setUserTraits(userTraits: UserTraits) {
         val gson = GsonBuilder()
-            .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+            .registerTypeAdapter(Date::class.java, DateSerializer())
             .create()
 
         val userTraitsJson = gson.toJson(userTraits)
@@ -106,15 +105,15 @@ internal class DefaultIterateSharedPrefs(
     }
 }
 
-internal class LocalDateTimeSerializer : JsonSerializer<LocalDateTime> {
+internal class DateSerializer : JsonSerializer<Date> {
     override fun serialize(
-        src: LocalDateTime?,
+        src: Date?,
         typeOfSrc: Type?,
         context: JsonSerializationContext?
     ): JsonElement {
         return if (src == null) JsonNull.INSTANCE else JsonObject().apply {
             addProperty("type", "date")
-            addProperty("value", src.toEpochSecond(ZoneOffset.UTC))
+            addProperty("value", src.getTime() / 1000)
         }
     }
 }
