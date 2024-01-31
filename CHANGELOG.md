@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.8](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.8)
+
+Released on 2024-01-31.
+
+**Added**
+
+Added support for Markdown syntax in the survey prompt.
+
 ## [1.1.7](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.7)
 
 Released on 2023-09-28.
