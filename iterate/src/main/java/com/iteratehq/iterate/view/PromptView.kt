@@ -18,6 +18,10 @@ import com.iteratehq.iterate.databinding.PromptViewBinding
 import com.iteratehq.iterate.model.InteractionEventSource
 import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.Survey
+import io.noties.markwon.AbstractMarkwonPlugin
+import io.noties.markwon.Markwon
+import io.noties.markwon.core.MarkwonTheme
+import io.noties.markwon.image.ImagesPlugin
 
 class PromptView : BottomSheetDialogFragment() {
 
@@ -70,16 +74,25 @@ class PromptView : BottomSheetDialogFragment() {
     }
 
     private fun setupView() {
+        val defaultColor = "#7457be"
         val survey = arguments?.getParcelable<Survey>(SURVEY)
         val surveyTextFont = arguments?.getString(SURVEY_TEXT_FONT)
         val buttonFont = arguments?.getString(BUTTON_FONT)
+        val markwon = Markwon.builder(requireContext())
+            .usePlugin(ImagesPlugin.create())
+            .usePlugin(object : AbstractMarkwonPlugin() {
+                override fun configureTheme(builder: MarkwonTheme.Builder) {
+                    super.configureTheme(builder)
+                    builder.linkColor(Color.parseColor(survey?.color ?: defaultColor))
+                }
+            }).build()
 
         with(binding) {
             btnClose.setOnClickListener {
                 dismiss()
             }
 
-            txtPrompt.text = survey?.prompt?.message
+            markwon.setMarkdown(txtPrompt, survey?.prompt?.message ?: "")
             if (surveyTextFont != null) {
                 txtPrompt.setTypeface(
                     Typeface.createFromAsset(
@@ -89,7 +102,7 @@ class PromptView : BottomSheetDialogFragment() {
                 )
             }
 
-            val color = survey?.color ?: "#7457be"
+            val color = survey?.color ?: defaultColor
             val backgroundColor =
                 if (isDarkTheme() && survey?.colorDark != null) survey.colorDark else color
             btnPrompt.text = survey?.prompt?.buttonText
