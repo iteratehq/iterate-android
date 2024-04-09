@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.9](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.9)
+
+Released on 2024-04-09.
+
+**Fixed**
+
+Dynamically set the button text color to work better with dark mode
+
 ## [1.1.8](https://github.com/iteratehq/iterate-android/releases/tag/v1.1.8)
 
 Released on 2024-01-31.
