@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.graphics.ColorUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.iteratehq.iterate.R
@@ -110,6 +111,9 @@ class PromptView : BottomSheetDialogFragment() {
                 btnPrompt.setTypeface(Typeface.createFromAsset(requireContext().assets, buttonFont))
             }
             btnPrompt.backgroundTintList = ColorStateList.valueOf(Color.parseColor(backgroundColor))
+            // Calculate the luminance of the background color and set the text color
+            val textColor = if (ColorUtils.calculateLuminance(Color.parseColor(backgroundColor)) < 0.5) Color.WHITE else Color.BLACK
+            btnPrompt.setTextColor(textColor)
             btnPrompt.setOnClickListener {
                 promptButtonClicked = true
                 if (survey != null) {
