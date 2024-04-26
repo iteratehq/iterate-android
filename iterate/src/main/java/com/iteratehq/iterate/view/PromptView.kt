@@ -114,6 +114,12 @@ class PromptView : BottomSheetDialogFragment() {
             // Calculate the luminance of the background color and set the text color
             val textColor = if (ColorUtils.calculateLuminance(Color.parseColor(backgroundColor)) < 0.5) Color.WHITE else Color.BLACK
             btnPrompt.setTextColor(textColor)
+
+            survey?.borderRadius?.let { radius ->
+                val radiusValue = radius.replace("px", "").toFloat()
+                btnPrompt.cornerRadius = radiusValue.toInt()
+            }
+
             btnPrompt.setOnClickListener {
                 promptButtonClicked = true
                 if (survey != null) {
