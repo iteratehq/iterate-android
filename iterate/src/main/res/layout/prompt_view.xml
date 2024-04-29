@@ -33,18 +33,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Help us improve the Iterate iOS SDK by answering a few questions about your ideal use cases" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_prompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="16dp"
-        android:layout_marginRight="40dp"
-        android:backgroundTint="#7457BE"
+        android:layout_marginEnd="40dp"
         android:textAllCaps="false"
         android:textColor="?attr/colorButtonText"
+        app:backgroundTint="#7457BE"
         app:cornerRadius="6dp"
         app:layout_constraintTop_toBottomOf="@id/txt_prompt"
         tools:text="Happy to Help" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
