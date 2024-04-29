@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
-## [1.1.9](https://github.com/iteratehq/iterate-android/releases/tag/v1.2.0)
+## [1.2.0](https://github.com/iteratehq/iterate-android/releases/tag/v1.2.0)
 
 Released on 2024-04-29.
 
