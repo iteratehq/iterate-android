@@ -59,16 +59,18 @@ object Iterate {
         buttonFontAssetPath: String? = null,
         useEncryptedSharedPreferences: Boolean = true,
     ) {
-        this.iterateRepository = DefaultIterateRepository(
-            context.applicationContext,
-            apiKey,
-            useEncryptedSharedPreferences
-        )
-        this.apiKey = apiKey
-        this.urlScheme = urlScheme
-        this.surveyTextFontAssetPath = surveyTextFontAssetPath
-        this.buttonFontAssetPath = buttonFontAssetPath
-        initAuthToken(apiKey)
+        CoroutineScope(Dispatchers.IO).launch {
+            this@Iterate.iterateRepository = DefaultIterateRepository(
+                context.applicationContext,
+                apiKey,
+                useEncryptedSharedPreferences
+            )
+            this@Iterate.apiKey = apiKey
+            this@Iterate.urlScheme = urlScheme
+            this@Iterate.surveyTextFontAssetPath = surveyTextFontAssetPath
+            this@Iterate.buttonFontAssetPath = buttonFontAssetPath
+            initAuthToken(apiKey)
+        }
     }
 
     /**
