@@ -187,6 +187,9 @@ class SurveyView : DialogFragment() {
     }
 
     private fun isDarkTheme(): Boolean {
+        val survey = arguments?.getParcelable<Survey>(SURVEY)
+        if (survey?.appearance == "dark") return true
+        if (survey?.appearance == "light") return false
         return (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
     }
 
