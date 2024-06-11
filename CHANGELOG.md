@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.0](https://github.com/iteratehq/iterate-android/releases/tag/v1.3.0)
+
+Released on 2024-06-11.
+
+**Added**
+
+Added support for survey appearance options (Light/Dark/Auto)
+
 ## [1.2.0](https://github.com/iteratehq/iterate-android/releases/tag/v1.2.0)
 
 Released on 2024-04-29.
