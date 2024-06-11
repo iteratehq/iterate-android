@@ -17,5 +17,6 @@ data class Survey(
     @SerializedName("color_dark")
     val colorDark: String?,
     @SerializedName("border_radius")
-    val borderRadius: String? = null
+    val borderRadius: String? = null,
+    val appearance: String? = null
 ) : Parcelable
