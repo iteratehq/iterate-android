@@ -14,6 +14,7 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.graphics.ColorUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.iteratehq.iterate.Iterate
 import com.iteratehq.iterate.R
 import com.iteratehq.iterate.databinding.PromptViewBinding
 import com.iteratehq.iterate.model.InteractionEventSource
@@ -88,12 +89,18 @@ class PromptView : BottomSheetDialogFragment() {
                 }
             }).build()
 
+        if (survey == null) {
+            dismiss()
+            return
+        }
+
         with(binding) {
             btnClose.setOnClickListener {
                 dismiss()
             }
 
-            markwon.setMarkdown(txtPrompt, survey?.prompt?.message ?: "")
+            val promptMessage = Iterate.getTranslationForKey("survey.prompt.text", survey) ?: survey.prompt?.message
+            markwon.setMarkdown(txtPrompt, promptMessage ?: "")
             if (surveyTextFont != null) {
                 txtPrompt.setTypeface(
                     Typeface.createFromAsset(
@@ -103,10 +110,11 @@ class PromptView : BottomSheetDialogFragment() {
                 )
             }
 
-            val color = survey?.color ?: defaultColor
+            val color = survey.color ?: defaultColor
             val backgroundColor =
-                if (isDarkTheme() && survey?.colorDark != null) survey.colorDark else color
-            btnPrompt.text = survey?.prompt?.buttonText
+                if (isDarkTheme() && survey.colorDark != null) survey.colorDark else color
+            val buttonText = Iterate.getTranslationForKey("survey.prompt.buttonText", survey) ?: survey.prompt?.buttonText
+            btnPrompt.text = buttonText
             if (buttonFont != null) {
                 btnPrompt.setTypeface(Typeface.createFromAsset(requireContext().assets, buttonFont))
             }
@@ -115,16 +123,14 @@ class PromptView : BottomSheetDialogFragment() {
             val textColor = if (ColorUtils.calculateLuminance(Color.parseColor(backgroundColor)) < 0.5) Color.WHITE else Color.BLACK
             btnPrompt.setTextColor(textColor)
 
-            survey?.borderRadius?.let { radius ->
+            survey.borderRadius?.let { radius ->
                 val radiusValue = radius.replace("px", "").toFloat()
                 btnPrompt.cornerRadius = radiusValue.toInt()
             }
 
             btnPrompt.setOnClickListener {
                 promptButtonClicked = true
-                if (survey != null) {
-                    listener?.onPromptButtonClick(survey)
-                }
+                listener?.onPromptButtonClick(survey)
                 dismiss()
             }
         }

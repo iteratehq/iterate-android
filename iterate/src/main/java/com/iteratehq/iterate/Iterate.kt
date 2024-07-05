@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.Locale
 
 object Iterate {
     private lateinit var iterateRepository: IterateRepository
@@ -202,6 +203,8 @@ object Iterate {
                             iterateRepository.setEventTraits(eventTraits, responseId)
                         }
 
+                        getPreferredLanguage(survey)
+
                         // If the survey has a timer trigger, wait that number of seconds before showing the survey
                         if (
                             !result.triggers.isNullOrEmpty() &&
@@ -346,5 +349,47 @@ object Iterate {
     ) {
         iterateRepository.dismissed(survey)
         InteractionEvents.dismiss(source, survey, progress)
+    }
+
+    private fun availableLanguages(survey: Survey): List<String> {
+        val primaryLanguage = survey.primaryLanguage
+        val languages = mutableListOf<String>()
+        survey.translations?.forEach { translation ->
+            languages.add(translation.language)
+        }
+
+        if (primaryLanguage != null) {
+            languages.add(primaryLanguage)
+        }
+
+        return languages
+    }
+
+    private fun getPreferredLanguage(survey: Survey): String {
+        val deviceLanguage = Locale.getDefault().language
+        val available = availableLanguages(survey)
+
+        val userTraits = iterateRepository.getUserTraits()
+        val userTraitLanguage = userTraits?.get("language")?.toString()
+        if (userTraitLanguage != null && available.contains(userTraitLanguage)) {
+            return userTraitLanguage
+        }
+
+        if (available.contains(deviceLanguage)) {
+            return deviceLanguage
+        }
+
+        return "en"
+    }
+
+    internal fun getTranslationForKey(key: String, survey: Survey): String? {
+        val preferredLanguage = getPreferredLanguage(survey)
+        survey.translations?.forEach { translation ->
+            if (translation.language == preferredLanguage) {
+                return translation.items?.get(key)?.text
+            }
+        }
+
+        return null
     }
 }
