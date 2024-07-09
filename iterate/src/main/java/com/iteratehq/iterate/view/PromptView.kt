@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -110,11 +111,23 @@ class PromptView : BottomSheetDialogFragment() {
                 )
             }
 
-            val color = survey.color ?: defaultColor
+            // View background & text colors
+            if (isDarkTheme()) {
+                root.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blackLight))
+                txtPrompt.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            } else {
+                root.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                txtPrompt.setTextColor(ContextCompat.getColor(requireContext(), R.color.blackText))
+            }
+
+            // Button background & text colors
+            val color = survey?.color ?: defaultColor
             val backgroundColor =
-                if (isDarkTheme() && survey.colorDark != null) survey.colorDark else color
+                if (isDarkTheme() && survey?.colorDark != null) survey.colorDark else color
+
             val buttonText = Iterate.getTranslationForKey("survey.prompt.buttonText", survey) ?: survey.prompt?.buttonText
             btnPrompt.text = buttonText
+
             if (buttonFont != null) {
                 btnPrompt.setTypeface(Typeface.createFromAsset(requireContext().assets, buttonFont))
             }
@@ -137,6 +150,9 @@ class PromptView : BottomSheetDialogFragment() {
     }
 
     private fun isDarkTheme(): Boolean {
+        val survey = arguments?.getParcelable<Survey>(SURVEY)
+        if (survey?.appearance == "dark") return true
+        if (survey?.appearance == "light") return false
         return (resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
     }
 
