@@ -7,7 +7,7 @@ plugins {
 }
 
 ext {
-    VERSION_CODE = 16
+    VERSION_CODE = 17
     VERSION_NAME = '1.4.0'
     PUBLISH_ARTIFACT_ID = 'iterate'
     PUBLISH_GROUP_ID = 'com.iteratehq'
