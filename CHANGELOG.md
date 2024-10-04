@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.0](https://github.com/iteratehq/iterate-android/releases/tag/v1.4.0)
+
+Released on 2024-10-04.
+
+**Added**
+
+Added support for multi-language surveys
+
 ## [1.3.1](https://github.com/iteratehq/iterate-android/releases/tag/v1.3.1)
 
 Released on 2024-09-10.
