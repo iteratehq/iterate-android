@@ -1,6 +1,7 @@
 package com.iteratehq.iterate
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.fragment.app.FragmentManager
 import com.iteratehq.iterate.data.DefaultIterateRepository
@@ -301,7 +302,7 @@ object Iterate {
                 }
             })
             try {
-                if (!fragmentManager.isDestroyed) {
+                if (canShowFragment(fragmentManager)) {
                     show(fragmentManager, null)
                 }
             } catch (e: Exception) {
@@ -331,7 +332,7 @@ object Iterate {
                 }
             })
             try {
-                if (!fragmentManager.isDestroyed) {
+                if (canShowFragment(fragmentManager)) {
                     show(fragmentManager, null)
                 }
             } catch (e: Exception) {
@@ -391,5 +392,13 @@ object Iterate {
         }
 
         return null
+    }
+
+    private fun canShowFragment(fragmentManager: FragmentManager): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            !fragmentManager.isDestroyed && !fragmentManager.isStateSaved
+        } else {
+            !fragmentManager.isDestroyed
+        }
     }
 }
