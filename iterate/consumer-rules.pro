@@ -1,0 +1,3 @@
+-keep class com.caverock.androidsvg.** { *; }
+-dontwarn javax.annotation.concurrent.GuardedBy
+-dontwarn pl.droidsonroids.gif.GifDrawable
