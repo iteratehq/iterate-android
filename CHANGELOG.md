@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.4](https://github.com/iteratehq/iterate-android/releases/tag/v1.4.4)
+
+Released on 2025-02-05.
+
+**Fixed**
+
+Fixed a crash when deserializing surveys
+
+
 ## [1.4.3](https://github.com/iteratehq/iterate-android/releases/tag/v1.4.3)
 
 Released on 2024-11-12.
