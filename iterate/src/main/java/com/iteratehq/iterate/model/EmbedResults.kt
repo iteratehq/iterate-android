@@ -8,7 +8,9 @@ internal data class EmbedResults(
     val auth: Auth?,
     val survey: Survey?,
     val triggers: List<Trigger>?,
-    val tracking: Tracking?
+    val tracking: Tracking?,
+    @SerializedName("event_traits")
+    val eventTraits: UserTraits?
 )
 
 @Keep

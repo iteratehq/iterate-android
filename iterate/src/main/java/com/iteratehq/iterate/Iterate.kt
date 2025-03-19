@@ -198,8 +198,23 @@ object Iterate {
                         // Generate a unique id (current timestamp) for this survey display so we ensure
                         // we associate the correct event traits with it
                         val responseId = Date().time
+                        
+                        // Initialize empty event traits
+                        val finalEventTraits = EventTraits()
+                        
+                        // If user provided event traits, add them first
                         if (eventTraits != null) {
-                            iterateRepository.setEventTraits(eventTraits, responseId)
+                            finalEventTraits.putAll(eventTraits)
+                        }
+                        
+                        // If server returned event traits, add them (overwriting any duplicates)
+                        if (result.eventTraits != null) {
+                            finalEventTraits.putAll(result.eventTraits)
+                        }
+                        
+                        // Store the final event traits if we have any
+                        if (finalEventTraits.isNotEmpty()) {
+                            iterateRepository.setEventTraits(finalEventTraits, responseId)
                         }
 
                         // If the survey has a timer trigger, wait that number of seconds before showing the survey
