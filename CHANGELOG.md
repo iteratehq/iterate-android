@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.6](https://github.com/iteratehq/iterate-android/releases/tag/v1.4.6)
+
+Released on 2025-04-11.
+
+**Fixed**
+
+Ampersand's are correctly encoded when present in response properties
+
 ## [1.4.5](https://github.com/iteratehq/iterate-android/releases/tag/v1.4.5)
 
 Released on 2025-03-25.
