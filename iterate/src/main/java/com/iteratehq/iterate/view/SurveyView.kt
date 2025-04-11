@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.net.URL
+import java.net.URLEncoder
 import java.util.Date
 
 class SurveyView : DialogFragment() {
@@ -87,15 +88,17 @@ class SurveyView : DialogFragment() {
 
         // Add the event traits
         eventTraits?.forEach { (key, value) ->
+            val encodedKey = URLEncoder.encode(key, "UTF-8")
+            val encodedValue = URLEncoder.encode(value.toString(), "UTF-8")
             if (value is Boolean) {
-                params.add("response_boolean_$key=$value")
+                params.add("response_boolean_$encodedKey=$encodedValue")
             } else if (value is Long || value is Int) {
-                params.add("response_number_$key=$value")
+                params.add("response_number_$encodedKey=$encodedValue")
             } else if (value is Date) {
                 val timestamp = value.getTime() / 1000
-                params.add("response_date_$key=$timestamp")
+                params.add("response_date_$encodedKey=$timestamp")
             } else {
-                params.add("response_$key=$value")
+                params.add("response_$encodedKey=$encodedValue")
             }
         }
 
