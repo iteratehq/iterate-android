@@ -7,11 +7,11 @@ import com.google.gson.annotations.SerializedName
 data class TriggerContext(
     @SerializedName("survey_id")
     val surveyId: String?,
-    val type: TriggerContextType?
+    val type: TriggerContextType?,
 )
 
 @Keep
 enum class TriggerContextType(val value: String) {
     @SerializedName("manual")
-    MANUAL("manual")
+    MANUAL("manual"),
 }

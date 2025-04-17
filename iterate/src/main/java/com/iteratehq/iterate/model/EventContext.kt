@@ -4,5 +4,5 @@ import androidx.annotation.Keep
 
 @Keep
 data class EventContext(
-    val name: String?
+    val name: String?,
 )

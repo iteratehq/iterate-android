@@ -5,5 +5,5 @@ import androidx.annotation.Keep
 @Keep
 data class Question(
     val id: String,
-    val prompt: String
+    val prompt: String,
 )

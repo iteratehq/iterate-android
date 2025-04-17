@@ -9,5 +9,5 @@ data class ApiResponseError(
     val message: String?,
     val type: String?,
     @SerializedName("user_message")
-    val userMessage: String?
+    val userMessage: String?,
 )
