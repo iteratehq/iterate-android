@@ -23,6 +23,8 @@ import com.iteratehq.iterate.model.Response
 import com.iteratehq.iterate.model.Survey
 import com.iteratehq.iterate.model.TargetingContext
 import com.iteratehq.iterate.model.TrackingContext
+import com.iteratehq.iterate.model.TriggerContext
+import com.iteratehq.iterate.model.TriggerContextType
 import com.iteratehq.iterate.model.TriggerType
 import com.iteratehq.iterate.model.UserTraits
 import com.iteratehq.iterate.view.PromptView
@@ -124,6 +126,22 @@ object Iterate {
         iterateRepository.setPreviewSurveyId(surveyId)
     }
 
+    fun sendEvent(
+        eventName: String,
+        fragmentManager: FragmentManager,
+        eventTraits: EventTraits? = null,
+    ) {
+        send(fragmentManager, eventContext = EventContext(eventName), eventTraits = eventTraits)
+    }
+
+    fun install(
+        surveyId: String,
+        fragmentManager: FragmentManager,
+        eventTraits: EventTraits? = null
+    ) {
+        send(fragmentManager, triggerContext = TriggerContext(surveyId, TriggerContextType.MANUAL))
+    }
+
     /**
      * Send an event to the server.
      *
@@ -135,9 +153,10 @@ object Iterate {
     @Throws(IllegalStateException::class)
     @JvmStatic
     @JvmOverloads
-    fun sendEvent(
-        eventName: String,
+    fun send(
         fragmentManager: FragmentManager,
+        triggerContext: TriggerContext? = null,
+        eventContext: EventContext? = null,
         eventTraits: EventTraits? = null,
     ) {
         if (android.os.Build.VERSION.SDK_INT <= 24) {
@@ -145,7 +164,7 @@ object Iterate {
         }
 
         if (!::iterateRepository.isInitialized) {
-            throw IllegalStateException("Error calling Iterate.sendEvent(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
+            throw IllegalStateException("Error calling Iterate.send(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
         }
 
         // Embed context user traits
@@ -173,10 +192,11 @@ object Iterate {
                 version = BuildConfig.VERSION_NAME,
                 urlScheme = urlScheme
             ),
-            event = EventContext(eventName),
+            event = eventContext,
             type = EmbedType.MOBILE,
             targeting = targeting,
             tracking = tracking,
+            trigger = triggerContext,
             userTraits = userTraits
         )
 

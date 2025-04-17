@@ -9,6 +9,7 @@ data class EmbedContext(
     val event: EventContext?,
     val targeting: TargetingContext?,
     val tracking: TrackingContext?,
+    val trigger: TriggerContext?,
     val type: EmbedType?,
     @SerializedName("user_traits")
     val userTraits: UserTraitsContext?
