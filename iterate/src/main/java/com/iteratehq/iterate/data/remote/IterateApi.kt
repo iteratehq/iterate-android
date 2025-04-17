@@ -21,29 +21,28 @@ import kotlin.coroutines.CoroutineContext
 internal interface IterateApi {
     fun embed(
         embedContext: EmbedContext,
-        callback: ApiResponseCallback<EmbedResults>? = null
+        callback: ApiResponseCallback<EmbedResults>? = null,
     )
 
     fun displayed(
         survey: Survey,
-        callback: ApiResponseCallback<DisplayedResults>? = null
+        callback: ApiResponseCallback<DisplayedResults>? = null,
     )
 
     fun dismissed(
         survey: Survey,
-        callback: ApiResponseCallback<DismissedResults>? = null
+        callback: ApiResponseCallback<DismissedResults>? = null,
     )
 }
 
 internal class DefaultIterateApi(
     private val apiKey: String,
     private val apiHost: String = DEFAULT_HOST,
-    private val workContext: CoroutineContext = Dispatchers.IO
+    private val workContext: CoroutineContext = Dispatchers.IO,
 ) : IterateApi {
-
     override fun embed(
         embedContext: EmbedContext,
-        callback: ApiResponseCallback<EmbedResults>?
+        callback: ApiResponseCallback<EmbedResults>?,
     ) {
         executeAsync(callback) {
             val path = "/surveys/embed"
@@ -53,7 +52,7 @@ internal class DefaultIterateApi(
 
     override fun displayed(
         survey: Survey,
-        callback: ApiResponseCallback<DisplayedResults>?
+        callback: ApiResponseCallback<DisplayedResults>?,
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/displayed"
@@ -63,7 +62,7 @@ internal class DefaultIterateApi(
 
     override fun dismissed(
         survey: Survey,
-        callback: ApiResponseCallback<DismissedResults>?
+        callback: ApiResponseCallback<DismissedResults>?,
     ) {
         executeAsync(callback) {
             val path = "/surveys/${survey.id}/dismiss"
@@ -74,18 +73,19 @@ internal class DefaultIterateApi(
     private suspend inline fun <T, reified R> httpRequest(
         path: String,
         method: Method,
-        body: T
+        body: T,
     ): ApiResponse<R> {
         return withContext(workContext) {
             var urlConnection: HttpURLConnection? = null
             try {
                 val url = URL("$apiHost/api/v1$path")
-                urlConnection = (url.openConnection() as HttpURLConnection).apply {
-                    setRequestProperty("Content-Type", "application/json")
-                    setRequestProperty("Authorization", "Bearer $apiKey")
-                    requestMethod = method.value
-                    doOutput = (method == Method.POST)
-                }
+                urlConnection =
+                    (url.openConnection() as HttpURLConnection).apply {
+                        setRequestProperty("Content-Type", "application/json")
+                        setRequestProperty("Authorization", "Bearer $apiKey")
+                        requestMethod = method.value
+                        doOutput = (method == Method.POST)
+                    }
 
                 val gson = Gson()
                 val bodyJson = gson.toJson(body)
@@ -108,9 +108,10 @@ internal class DefaultIterateApi(
                     }
                 }
 
-                val type = TypeToken
-                    .getParameterized(ApiResponse::class.java, R::class.java)
-                    .type
+                val type =
+                    TypeToken
+                        .getParameterized(ApiResponse::class.java, R::class.java)
+                        .type
                 gson.fromJson(response.toString(), type)
             } finally {
                 urlConnection?.disconnect()
@@ -129,19 +130,20 @@ internal class DefaultIterateApi(
      */
     private fun <T> executeAsync(
         callback: ApiResponseCallback<T>?,
-        apiCall: suspend () -> ApiResponse<T>?
+        apiCall: suspend () -> ApiResponse<T>?,
     ) {
         CoroutineScope(workContext).launch {
-            val result = runCatching {
-                requireNotNull(apiCall())
-            }
+            val result =
+                runCatching {
+                    requireNotNull(apiCall())
+                }
             dispatchResult(result, callback)
         }
     }
 
     private suspend fun <T> dispatchResult(
         result: Result<ApiResponse<T>>,
-        callback: ApiResponseCallback<T>?
+        callback: ApiResponseCallback<T>?,
     ) = withContext(Dispatchers.Main) {
         if (callback != null) {
             result.fold(
@@ -155,7 +157,7 @@ internal class DefaultIterateApi(
                 },
                 onFailure = {
                     callback.onError(Exception(it.message, it))
-                }
+                },
             )
         }
     }
@@ -167,5 +169,5 @@ internal class DefaultIterateApi(
 
 internal enum class Method(val value: String) {
     GET("GET"),
-    POST("POST")
+    POST("POST"),
 }

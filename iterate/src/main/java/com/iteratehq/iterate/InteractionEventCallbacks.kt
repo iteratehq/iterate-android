@@ -11,7 +11,7 @@ object InteractionEventCallbacks {
         (
             response: Response,
             question: Question,
-            survey: Survey
+            survey: Survey,
         ) -> Unit
     )? = null
 

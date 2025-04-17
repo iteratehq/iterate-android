@@ -10,5 +10,5 @@ import kotlinx.parcelize.Parcelize
 data class Prompt(
     val message: String,
     @SerializedName("button_text")
-    val buttonText: String
+    val buttonText: String,
 ) : Parcelable

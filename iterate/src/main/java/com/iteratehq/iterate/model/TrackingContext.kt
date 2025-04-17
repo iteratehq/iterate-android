@@ -6,5 +6,5 @@ import com.google.gson.annotations.SerializedName
 @Keep
 data class TrackingContext(
     @SerializedName("last_updated")
-    val lastUpdated: Long?
+    val lastUpdated: Long?,
 )

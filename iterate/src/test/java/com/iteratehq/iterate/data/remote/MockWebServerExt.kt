@@ -6,13 +6,16 @@ import okio.buffer
 import okio.source
 import java.nio.charset.StandardCharsets
 
-internal fun MockWebServer.enqueueResponse(fileName: String, code: Int) {
+internal fun MockWebServer.enqueueResponse(
+    fileName: String,
+    code: Int,
+) {
     val inputStream = javaClass.classLoader?.getResourceAsStream(fileName)
     inputStream?.source()?.buffer()?.let { source ->
         enqueue(
             MockResponse()
                 .setBody(source.readString(StandardCharsets.UTF_8))
-                .setResponseCode(code)
+                .setResponseCode(code),
         )
     }
 }

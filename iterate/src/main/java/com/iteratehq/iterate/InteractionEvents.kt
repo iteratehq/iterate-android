@@ -15,27 +15,31 @@ object InteractionEvents {
     internal fun dismiss(
         source: InteractionEventSource,
         survey: Survey,
-        progress: ProgressEventMessageData?
+        progress: ProgressEventMessageData?,
     ) {
         InteractionEventCallbacks.onEvent?.invoke(
             InteractionEventTypes.DISMISS,
-            InteractionEventDismissData(progress, source, survey)
+            InteractionEventDismissData(progress, source, survey),
         )
     }
 
     internal fun promptDisplayed(survey: Survey) {
         InteractionEventCallbacks.onEvent?.invoke(
             InteractionEventTypes.DISPLAYED,
-            InteractionEventDisplayedData(InteractionEventSource.PROMPT, survey)
+            InteractionEventDisplayedData(InteractionEventSource.PROMPT, survey),
         )
     }
 
-    internal fun response(survey: Survey, response: Response?, question: Question?) {
+    internal fun response(
+        survey: Survey,
+        response: Response?,
+        question: Question?,
+    ) {
         if (response != null && question != null) {
             InteractionEventCallbacks.onResponse?.invoke(response, question, survey)
             InteractionEventCallbacks.onEvent?.invoke(
                 InteractionEventTypes.RESPONSE,
-                InteractionEventResponseData(response, question, survey)
+                InteractionEventResponseData(response, question, survey),
             )
         }
     }
@@ -43,14 +47,14 @@ object InteractionEvents {
     internal fun surveyComplete(survey: Survey) {
         InteractionEventCallbacks.onEvent?.invoke(
             InteractionEventTypes.SURVEY_COMPLETE,
-            InteractionEventSurveyCompleteData(survey)
+            InteractionEventSurveyCompleteData(survey),
         )
     }
 
     internal fun surveyDisplayed(survey: Survey) {
         InteractionEventCallbacks.onEvent?.invoke(
             InteractionEventTypes.DISPLAYED,
-            InteractionEventDisplayedData(InteractionEventSource.SURVEY, survey)
+            InteractionEventDisplayedData(InteractionEventSource.SURVEY, survey),
         )
     }
 }

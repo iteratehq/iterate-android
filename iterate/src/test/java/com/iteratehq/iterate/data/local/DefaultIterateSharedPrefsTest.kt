@@ -47,11 +47,12 @@ class DefaultIterateSharedPrefsTest {
 
     @Test
     fun `should have all data set to null after being cleared`() {
-        val prefs = DefaultIterateSharedPrefs(context).apply {
-            setLastUpdated(lastUpdated)
-            setUserAuthToken(userAuthToken)
-            setUserTraits(userTraits)
-        }
+        val prefs =
+            DefaultIterateSharedPrefs(context).apply {
+                setLastUpdated(lastUpdated)
+                setUserAuthToken(userAuthToken)
+                setUserTraits(userTraits)
+            }
         prefs.clear()
 
         val outputLastUpdated = prefs.getLastUpdated()

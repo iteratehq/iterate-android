@@ -5,5 +5,6 @@ package com.iteratehq.iterate.data.remote
  */
 interface ApiResponseCallback<in T> {
     fun onSuccess(result: T)
+
     fun onError(e: Exception)
 }

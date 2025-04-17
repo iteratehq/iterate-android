@@ -15,9 +15,9 @@ import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class IterateRepositoryTest {
-
     private lateinit var repository: IterateRepository
 
     @Mock
@@ -42,14 +41,15 @@ class IterateRepositoryTest {
         MockitoAnnotations.openMocks(this)
 
         val context: Context = ApplicationProvider.getApplicationContext()
-        repository = DefaultIterateRepository(
-            context,
-            "API_KEY",
-            true,
-            iterateApi,
-            iterateInMemoryStore,
-            iterateSharedPrefs
-        )
+        repository =
+            DefaultIterateRepository(
+                context,
+                "API_KEY",
+                true,
+                iterateApi,
+                iterateInMemoryStore,
+                iterateSharedPrefs,
+            )
     }
 
     @Test

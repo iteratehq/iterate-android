@@ -50,12 +50,13 @@ class DefaultIterateInMemoryStoreTest {
 
     @Test
     fun `should have all data set to null after being cleared`() {
-        val store = DefaultIterateInMemoryStore().apply {
-            setCompanyAuthToken(companyAuthToken)
-            setDisplayedSurveyResponseId(displayedSurveyResponseId)
-            setEventTraitsMap(eventTraitsMap)
-            setPreviewSurveyId(previewSurveyId)
-        }
+        val store =
+            DefaultIterateInMemoryStore().apply {
+                setCompanyAuthToken(companyAuthToken)
+                setDisplayedSurveyResponseId(displayedSurveyResponseId)
+                setEventTraitsMap(eventTraitsMap)
+                setPreviewSurveyId(previewSurveyId)
+            }
         store.clear()
 
         val outputCompanyAuthToken = store.getCompanyAuthToken()

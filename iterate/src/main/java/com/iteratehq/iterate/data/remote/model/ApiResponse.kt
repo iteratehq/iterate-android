@@ -6,5 +6,5 @@ import androidx.annotation.Keep
 internal data class ApiResponse<T>(
     val errors: List<ApiResponseError>?,
     val error: Any?,
-    val results: T?
+    val results: T?,
 )

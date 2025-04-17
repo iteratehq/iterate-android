@@ -4,13 +4,21 @@ import com.iteratehq.iterate.model.EventTraits
 
 internal interface IterateInMemoryStore {
     fun clear()
+
     fun getCompanyAuthToken(): String?
+
     fun getDisplayedSurveyResponseId(): Long?
+
     fun getEventTraitsMap(): Map<Long, EventTraits>?
+
     fun getPreviewSurveyId(): String?
+
     fun setCompanyAuthToken(companyAuthToken: String?)
+
     fun setDisplayedSurveyResponseId(responseId: Long?)
+
     fun setEventTraitsMap(eventTraitsMap: Map<Long, EventTraits>?)
+
     fun setPreviewSurveyId(previewSurveyId: String?)
 }
 

@@ -13,7 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
-import com.iterate.myapplication.ui.theme.IterateTheme
+import com.iterate.myapplication.ui.theme.iterateTheme
 import com.iteratehq.iterate.Iterate
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.UserTraits
@@ -38,25 +38,25 @@ class MainActivity : FragmentActivity() {
         }
 
         setContent {
-            IterateTheme {
+            iterateTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Button(
                             onClick = {
                                 Iterate.sendEvent(
                                     "show-survey-button-tapped",
                                     this@MainActivity.supportFragmentManager,
-                                    EventTraits("currentDate" to Date())
+                                    EventTraits("currentDate" to Date()),
                                 )
-                            }
+                            },
                         ) {
                             Text(text = "Show Survey")
                         }
@@ -77,10 +77,10 @@ class MainActivity : FragmentActivity() {
                                     UserTraits(
                                         "external_id" to EXTERNAL_ID,
                                         "email" to EMAIL,
-                                        "date_joined" to januaryFirst2023
-                                    )
+                                        "date_joined" to januaryFirst2023,
+                                    ),
                                 )
-                            }
+                            },
                         ) {
                             Text(text = "Login")
                         }
@@ -88,7 +88,7 @@ class MainActivity : FragmentActivity() {
                         Button(
                             onClick = {
                                 Iterate.reset()
-                            }
+                            },
                         ) {
                             Text(text = "Logout")
                         }
@@ -100,7 +100,9 @@ class MainActivity : FragmentActivity() {
 
     companion object {
         private const val API_KEY =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55X2lkIjoiNWRmZTM2OGEwOWI2ZWYwMDAxYjNlNjE4IiwiaWF0IjoxNTc2OTQxMTk0fQ.QBWr2goMwOngVhi6wY9sdFAKEvBGmn-JRDKstVMFh6M"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55X2lkIjoiNWRmZTM2OG" +
+                "EwOWI2ZWYwMDAxYjNlNjE4IiwiaWF0IjoxNTc2OTQxMTk0fQ.QBWr2goMwOngVhi6" +
+                "wY9sdFAKEvBGmn-JRDKstVMFh6M"
         private const val EMAIL = "example@email.com"
         private const val EXTERNAL_ID = "user-123"
         private const val SURVEY_ID = "5efa0121a9fffa0001c70b8d"
