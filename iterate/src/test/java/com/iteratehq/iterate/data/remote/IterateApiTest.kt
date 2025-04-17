@@ -54,7 +54,7 @@ class IterateApiTest {
             server.enqueueResponse("embed.json", 200)
             server.start()
 
-            val embedContext = EmbedContext(null, null, null, null, null, null)
+            val embedContext = EmbedContext(null, null, null, null, null, null,null)
             val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
             iterateApi.embed(
                 embedContext,
@@ -100,7 +100,7 @@ class IterateApiTest {
         server.enqueueResponse("embed.json", 401)
         server.start()
 
-        val embedContext = EmbedContext(null, null, null, null, null, null)
+        val embedContext = EmbedContext(null, null, null, null, null,null, null)
         val iterateApi = DefaultIterateApi("api key", server.url("/").toString())
         iterateApi.embed(
             embedContext,
