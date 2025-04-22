@@ -4,14 +4,14 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
 @Keep
-data class TargetingContext(
-    val frequency: Frequency?,
+data class TriggerContext(
     @SerializedName("survey_id")
     val surveyId: String?,
+    val type: TriggerContextType?,
 )
 
 @Keep
-enum class Frequency(val value: String) {
-    @SerializedName("always")
-    ALWAYS("always"),
+enum class TriggerContextType(val value: String) {
+    @SerializedName("manual")
+    MANUAL("manual"),
 }

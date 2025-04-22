@@ -27,9 +27,12 @@ import io.noties.markwon.core.MarkwonTheme
 import io.noties.markwon.image.ImagesPlugin
 
 class PromptView : BottomSheetDialogFragment() {
-
     interface PromptListener {
-        fun onDismiss(source: InteractionEventSource, progress: ProgressEventMessageData?)
+        fun onDismiss(
+            source: InteractionEventSource,
+            progress: ProgressEventMessageData?,
+        )
+
         fun onPromptButtonClick(survey: Survey)
     }
 
@@ -40,7 +43,7 @@ class PromptView : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         // Create ContextThemeWrapper with the custom theme
         val contextThemeWrapper =
@@ -58,7 +61,10 @@ class PromptView : BottomSheetDialogFragment() {
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
     }
@@ -81,14 +87,17 @@ class PromptView : BottomSheetDialogFragment() {
         val survey = arguments?.getParcelable<Survey>(SURVEY)
         val surveyTextFont = arguments?.getString(SURVEY_TEXT_FONT)
         val buttonFont = arguments?.getString(BUTTON_FONT)
-        val markwon = Markwon.builder(requireContext())
-            .usePlugin(ImagesPlugin.create())
-            .usePlugin(object : AbstractMarkwonPlugin() {
-                override fun configureTheme(builder: MarkwonTheme.Builder) {
-                    super.configureTheme(builder)
-                    builder.linkColor(Color.parseColor(survey?.color ?: defaultColor))
-                }
-            }).build()
+        val markwon =
+            Markwon.builder(requireContext())
+                .usePlugin(ImagesPlugin.create())
+                .usePlugin(
+                    object : AbstractMarkwonPlugin() {
+                        override fun configureTheme(builder: MarkwonTheme.Builder) {
+                            super.configureTheme(builder)
+                            builder.linkColor(Color.parseColor(survey?.color ?: defaultColor))
+                        }
+                    },
+                ).build()
 
         if (survey == null) {
             dismiss()
@@ -106,8 +115,8 @@ class PromptView : BottomSheetDialogFragment() {
                 txtPrompt.setTypeface(
                     Typeface.createFromAsset(
                         requireContext().assets,
-                        surveyTextFont
-                    )
+                        surveyTextFont,
+                    ),
                 )
             }
 
@@ -161,12 +170,17 @@ class PromptView : BottomSheetDialogFragment() {
         private const val SURVEY_TEXT_FONT = "survey_text_font"
         private const val BUTTON_FONT = "button_font"
 
-        fun newInstance(survey: Survey, surveyTextFont: String? = null, buttonFont: String? = null): PromptView {
-            val bundle = Bundle().apply {
-                putParcelable(SURVEY, survey)
-                putString(SURVEY_TEXT_FONT, surveyTextFont)
-                putString(BUTTON_FONT, buttonFont)
-            }
+        fun newInstance(
+            survey: Survey,
+            surveyTextFont: String? = null,
+            buttonFont: String? = null,
+        ): PromptView {
+            val bundle =
+                Bundle().apply {
+                    putParcelable(SURVEY, survey)
+                    putString(SURVEY_TEXT_FONT, surveyTextFont)
+                    putString(BUTTON_FONT, buttonFont)
+                }
             return PromptView().apply {
                 arguments = bundle
             }

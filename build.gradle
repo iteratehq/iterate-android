@@ -4,14 +4,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0'
+        classpath 'com.android.tools.build:gradle:8.9.1'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21'
     }
 }
 
 plugins {
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
-    id "org.jlleitschuh.gradle.ktlint" version "10.1.0"
+    id "org.jlleitschuh.gradle.ktlint" version "12.1.0"
 }
 
 allprojects {
@@ -25,6 +25,9 @@ allprojects {
     ktlint {
         // Disable this rule as it causes a conflict between formatting and checking
         disabledRules.set(["parameter-list-wrapping"])
+        filter {
+            exclude { element -> element.file.path.contains("test") }
+        }
     }
 }
 

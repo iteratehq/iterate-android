@@ -10,18 +10,18 @@ internal data class EmbedResults(
     val triggers: List<Trigger>?,
     val tracking: Tracking?,
     @SerializedName("event_traits")
-    val eventTraits: UserTraits?
+    val eventTraits: UserTraits?,
 )
 
 @Keep
 internal data class Auth(
-    val token: String
+    val token: String,
 )
 
 @Keep
 internal data class Trigger(
     val type: TriggerType,
-    val options: TriggerOptions
+    val options: TriggerOptions,
 )
 
 @Keep
@@ -33,16 +33,16 @@ internal enum class TriggerType(val value: String) {
     SCROLL("scroll"),
 
     @SerializedName("seconds")
-    SECONDS("seconds")
+    SECONDS("seconds"),
 }
 
 @Keep
 internal data class TriggerOptions(
-    val seconds: Int?
+    val seconds: Int?,
 )
 
 @Keep
 internal data class Tracking(
     @SerializedName("last_updated")
-    val lastUpdated: Long
+    val lastUpdated: Long,
 )

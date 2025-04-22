@@ -23,6 +23,8 @@ import com.iteratehq.iterate.model.Response
 import com.iteratehq.iterate.model.Survey
 import com.iteratehq.iterate.model.TargetingContext
 import com.iteratehq.iterate.model.TrackingContext
+import com.iteratehq.iterate.model.TriggerContext
+import com.iteratehq.iterate.model.TriggerContextType
 import com.iteratehq.iterate.model.TriggerType
 import com.iteratehq.iterate.model.UserTraits
 import com.iteratehq.iterate.view.PromptView
@@ -62,11 +64,12 @@ object Iterate {
         useEncryptedSharedPreferences: Boolean = true,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            this@Iterate.iterateRepository = DefaultIterateRepository(
-                context.applicationContext,
-                apiKey,
-                useEncryptedSharedPreferences
-            )
+            this@Iterate.iterateRepository =
+                DefaultIterateRepository(
+                    context.applicationContext,
+                    apiKey,
+                    useEncryptedSharedPreferences,
+                )
             this@Iterate.apiKey = apiKey
             this@Iterate.urlScheme = urlScheme
             this@Iterate.surveyTextFontAssetPath = surveyTextFontAssetPath
@@ -85,7 +88,9 @@ object Iterate {
     @JvmStatic
     fun identify(userTraits: UserTraits) {
         if (!::iterateRepository.isInitialized) {
-            throw IllegalStateException("Error calling Iterate.identify(). Make sure you call Iterate.init() before calling identify, see README for details")
+            throw IllegalStateException(
+                "Error calling Iterate.identify(). Make sure you call Iterate.init() before calling identify, see README for details",
+            )
         }
         iterateRepository.setUserTraits(userTraits)
     }
@@ -119,9 +124,27 @@ object Iterate {
     @JvmStatic
     fun preview(surveyId: String) {
         if (!::iterateRepository.isInitialized) {
-            throw IllegalStateException("Error calling Iterate.preview(). Make sure you call Iterate.init() before calling preview, see README for details")
+            throw IllegalStateException(
+                "Error calling Iterate.preview(). Make sure you call Iterate.init() before calling preview, see README for details",
+            )
         }
         iterateRepository.setPreviewSurveyId(surveyId)
+    }
+
+    fun sendEvent(
+        eventName: String,
+        fragmentManager: FragmentManager,
+        eventTraits: EventTraits? = null,
+    ) {
+        send(fragmentManager, eventContext = EventContext(eventName), eventTraits = eventTraits)
+    }
+
+    fun install(
+        surveyId: String,
+        fragmentManager: FragmentManager,
+        eventTraits: EventTraits? = null,
+    ) {
+        send(fragmentManager, triggerContext = TriggerContext(surveyId, TriggerContextType.MANUAL))
     }
 
     /**
@@ -135,9 +158,10 @@ object Iterate {
     @Throws(IllegalStateException::class)
     @JvmStatic
     @JvmOverloads
-    fun sendEvent(
-        eventName: String,
+    fun send(
         fragmentManager: FragmentManager,
+        triggerContext: TriggerContext? = null,
+        eventContext: EventContext? = null,
         eventTraits: EventTraits? = null,
     ) {
         if (android.os.Build.VERSION.SDK_INT <= 24) {
@@ -145,7 +169,9 @@ object Iterate {
         }
 
         if (!::iterateRepository.isInitialized) {
-            throw IllegalStateException("Error calling Iterate.sendEvent(). Make sure you call Iterate.init() before calling sendEvent, see README for details")
+            throw IllegalStateException(
+                "Error calling Iterate.send(). Make sure you call Iterate.init() before calling sendEvent or identify, see README for details",
+            )
         }
 
         // Embed context user traits
@@ -153,32 +179,37 @@ object Iterate {
 
         // Embed context last updated
         val lastUpdated = iterateRepository.getLastUpdated()
-        val tracking = if (lastUpdated != null) {
-            TrackingContext(lastUpdated)
-        } else {
-            null
-        }
+        val tracking =
+            if (lastUpdated != null) {
+                TrackingContext(lastUpdated)
+            } else {
+                null
+            }
 
         // Embed context preview mode
         val previewSurveyId = iterateRepository.getPreviewSurveyId()
-        val targeting = if (previewSurveyId != null) {
-            TargetingContext(Frequency.ALWAYS, previewSurveyId)
-        } else {
-            null
-        }
+        val targeting =
+            if (previewSurveyId != null) {
+                TargetingContext(Frequency.ALWAYS, previewSurveyId)
+            } else {
+                null
+            }
 
         // Set the embed context
-        val embedContext = EmbedContext(
-            app = AppContext(
-                version = BuildConfig.VERSION_NAME,
-                urlScheme = urlScheme
-            ),
-            event = EventContext(eventName),
-            type = EmbedType.MOBILE,
-            targeting = targeting,
-            tracking = tracking,
-            userTraits = userTraits
-        )
+        val embedContext =
+            EmbedContext(
+                app =
+                    AppContext(
+                        version = BuildConfig.VERSION_NAME,
+                        urlScheme = urlScheme,
+                    ),
+                event = eventContext,
+                type = EmbedType.MOBILE,
+                targeting = targeting,
+                tracking = tracking,
+                trigger = triggerContext,
+                userTraits = userTraits,
+            )
 
         // Call embed API
         iterateRepository.embed(
@@ -240,7 +271,7 @@ object Iterate {
                 override fun onError(e: Exception) {
                     Log.e("sendEvent error", e.toString())
                 }
-            }
+            },
         )
     }
 
@@ -254,8 +285,8 @@ object Iterate {
         userOnResponseCallback: (
             response: Response,
             question: Question,
-            survey: Survey
-        ) -> Unit
+            survey: Survey,
+        ) -> Unit,
     ) {
         InteractionEventCallbacks.onResponse = userOnResponseCallback
     }
@@ -271,7 +302,7 @@ object Iterate {
         userOnEventCallback: (
             type: InteractionEventTypes,
             data: InteractionEventData,
-        ) -> Unit
+        ) -> Unit,
     ) {
         InteractionEventCallbacks.onEvent = userOnEventCallback
     }
@@ -289,7 +320,7 @@ object Iterate {
     private fun showSurveyOrPrompt(
         survey: Survey,
         responseId: Long,
-        fragmentManager: FragmentManager
+        fragmentManager: FragmentManager,
     ) {
         if (survey.prompt != null) {
             showPrompt(survey, responseId, fragmentManager)
@@ -302,20 +333,22 @@ object Iterate {
     private fun showSurvey(
         survey: Survey,
         responseId: Long,
-        fragmentManager: FragmentManager
+        fragmentManager: FragmentManager,
     ) {
         val authToken =
             iterateRepository.getUserAuthToken() ?: iterateRepository.getCompanyAuthToken()
         val eventTraits = iterateRepository.getEventTraits(responseId)
         SurveyView.newInstance(survey, authToken, eventTraits, this.surveyTextFontAssetPath, this.buttonFontAssetPath).apply {
-            setListener(object : SurveyView.SurveyListener {
-                override fun onDismiss(
-                    source: InteractionEventSource,
-                    progress: ProgressEventMessageData?
-                ) {
-                    dismissed(source, survey, progress)
-                }
-            })
+            setListener(
+                object : SurveyView.SurveyListener {
+                    override fun onDismiss(
+                        source: InteractionEventSource,
+                        progress: ProgressEventMessageData?,
+                    ) {
+                        dismissed(source, survey, progress)
+                    }
+                },
+            )
             try {
                 if (canShowFragment(fragmentManager)) {
                     show(fragmentManager, null)
@@ -331,21 +364,23 @@ object Iterate {
     private fun showPrompt(
         survey: Survey,
         responseId: Long,
-        fragmentManager: FragmentManager
+        fragmentManager: FragmentManager,
     ) {
         PromptView.newInstance(survey, this.surveyTextFontAssetPath, this.buttonFontAssetPath).apply {
-            setListener(object : PromptView.PromptListener {
-                override fun onDismiss(
-                    source: InteractionEventSource,
-                    progress: ProgressEventMessageData?
-                ) {
-                    dismissed(source, survey, progress)
-                }
+            setListener(
+                object : PromptView.PromptListener {
+                    override fun onDismiss(
+                        source: InteractionEventSource,
+                        progress: ProgressEventMessageData?,
+                    ) {
+                        dismissed(source, survey, progress)
+                    }
 
-                override fun onPromptButtonClick(survey: Survey) {
-                    showSurvey(survey, responseId, fragmentManager)
-                }
-            })
+                    override fun onPromptButtonClick(survey: Survey) {
+                        showSurvey(survey, responseId, fragmentManager)
+                    }
+                },
+            )
             try {
                 if (canShowFragment(fragmentManager)) {
                     show(fragmentManager, null)
@@ -361,7 +396,7 @@ object Iterate {
     private fun dismissed(
         source: InteractionEventSource,
         survey: Survey,
-        progress: ProgressEventMessageData?
+        progress: ProgressEventMessageData?,
     ) {
         iterateRepository.dismissed(survey)
         InteractionEvents.dismiss(source, survey, progress)
@@ -398,7 +433,10 @@ object Iterate {
         return "en"
     }
 
-    internal fun getTranslationForKey(key: String, survey: Survey): String? {
+    internal fun getTranslationForKey(
+        key: String,
+        survey: Survey,
+    ): String? {
         val preferredLanguage = getPreferredLanguage(survey)
         survey.translations?.forEach { translation ->
             if (translation.language == preferredLanguage) {
