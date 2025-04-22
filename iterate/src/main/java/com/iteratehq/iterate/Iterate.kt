@@ -170,7 +170,7 @@ object Iterate {
 
         if (!::iterateRepository.isInitialized) {
             throw IllegalStateException(
-                "Error calling Iterate.send(). Make sure you call Iterate.init() before calling sendEvent, see README for details",
+                "Error calling Iterate.send(). Make sure you call Iterate.init() before calling sendEvent or identify, see README for details",
             )
         }
 
