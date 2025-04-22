@@ -7,5 +7,5 @@ enum class EventMessageTypes(val value: String) {
     CLOSE("close"),
     PROGRESS("progress"),
     RESPONSE("response"),
-    SURVEY_COMPLETE("survey-complete")
+    SURVEY_COMPLETE("survey-complete"),
 }

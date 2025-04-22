@@ -12,11 +12,11 @@ data class EmbedContext(
     val trigger: TriggerContext?,
     val type: EmbedType?,
     @SerializedName("user_traits")
-    val userTraits: UserTraitsContext?
+    val userTraits: UserTraitsContext?,
 )
 
 @Keep
 enum class EmbedType(val value: String) {
     @SerializedName("mobile")
-    MOBILE("mobile")
+    MOBILE("mobile"),
 }

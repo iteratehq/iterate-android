@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    namespace "com.iteratehq.example"
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.iteratehq.example"
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdk 21
+        targetSdk 33
         versionCode 1
         versionName "1.0.0"
 

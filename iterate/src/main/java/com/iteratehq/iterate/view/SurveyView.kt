@@ -36,9 +36,11 @@ import java.net.URLEncoder
 import java.util.Date
 
 class SurveyView : DialogFragment() {
-
     interface SurveyListener {
-        fun onDismiss(source: InteractionEventSource, progress: ProgressEventMessageData?)
+        fun onDismiss(
+            source: InteractionEventSource,
+            progress: ProgressEventMessageData?,
+        )
     }
 
     private lateinit var binding: SurveyViewBinding
@@ -49,7 +51,7 @@ class SurveyView : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = SurveyViewBinding.inflate(inflater)
         return binding.root
@@ -60,7 +62,10 @@ class SurveyView : DialogFragment() {
         setStyle(STYLE_NORMAL, android.R.style.Theme_Material_NoActionBar)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
     }
@@ -114,8 +119,9 @@ class SurveyView : DialogFragment() {
             params.add("buttonFontPath=file:///android_asset/$buttonFont")
         }
 
-        val url = "${DefaultIterateApi.DEFAULT_HOST}/${survey.companyId}/" +
-            "${survey.id}/mobile?${params.joinToString("&")}"
+        val url =
+            "${DefaultIterateApi.DEFAULT_HOST}/${survey.companyId}/" +
+                "${survey.id}/mobile?${params.joinToString("&")}"
         binding.webview.apply {
             // Set WebView background color with respect to the theme
             val color = if (isDarkTheme()) R.color.blackLight else R.color.white
@@ -123,30 +129,34 @@ class SurveyView : DialogFragment() {
 
             settings.javaScriptEnabled = true
 
-            webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
-                    binding.progressBar.isVisible = false
-                }
-
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest?
-                ): Boolean {
-                    val isIterateRequest = "${request?.url?.scheme}://${request?.url?.host}" == DefaultIterateApi.DEFAULT_HOST
-                    if (isIterateRequest) {
-                        return false
+            webViewClient =
+                object : WebViewClient() {
+                    override fun onPageFinished(
+                        view: WebView?,
+                        url: String?,
+                    ) {
+                        super.onPageFinished(view, url)
+                        binding.progressBar.isVisible = false
                     }
 
-                    if (request?.url != null) {
-                        val intent = Intent(Intent.ACTION_VIEW, request.url)
-                        view?.context?.startActivity(intent)
-                        return true
-                    } else {
-                        return false
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest?,
+                    ): Boolean {
+                        val isIterateRequest = "${request?.url?.scheme}://${request?.url?.host}" == DefaultIterateApi.DEFAULT_HOST
+                        if (isIterateRequest) {
+                            return false
+                        }
+
+                        if (request?.url != null) {
+                            val intent = Intent(Intent.ACTION_VIEW, request.url)
+                            view?.context?.startActivity(intent)
+                            return true
+                        } else {
+                            return false
+                        }
                     }
                 }
-            }
 
             // Bind an interface between JavaScript and Android code.
             // "ReactNativeWebView" is the interface name used when the JavaScript calls the
@@ -158,7 +168,7 @@ class SurveyView : DialogFragment() {
                         onMessage(message)
                     }
                 },
-                "ReactNativeWebView"
+                "ReactNativeWebView",
             )
 
             var response = ""
@@ -181,7 +191,7 @@ class SurveyView : DialogFragment() {
                     response,
                     "text/html",
                     "utf-8",
-                    ""
+                    "",
                 )
             } else {
                 dismiss()
@@ -198,26 +208,29 @@ class SurveyView : DialogFragment() {
 
     private fun onMessage(message: String) {
         val gson = Gson()
-        val messageMap = gson.fromJson<Map<String, Any?>>(
-            message,
-            object : TypeToken<Map<String, Any?>>() {}.type
-        )
+        val messageMap =
+            gson.fromJson<Map<String, Any?>>(
+                message,
+                object : TypeToken<Map<String, Any?>>() {}.type,
+            )
 
         when (messageMap["type"]) {
             EventMessageTypes.CLOSE.value -> {
                 dismiss()
             }
             EventMessageTypes.PROGRESS.value -> {
-                progress = gson.fromJson(
-                    gson.toJson(messageMap["data"]),
-                    ProgressEventMessageData::class.java
-                )
+                progress =
+                    gson.fromJson(
+                        gson.toJson(messageMap["data"]),
+                        ProgressEventMessageData::class.java,
+                    )
             }
             EventMessageTypes.RESPONSE.value -> {
-                val data = gson.fromJson(
-                    gson.toJson(messageMap["data"]),
-                    ResponseEventMessageData::class.java
-                )
+                val data =
+                    gson.fromJson(
+                        gson.toJson(messageMap["data"]),
+                        ResponseEventMessageData::class.java,
+                    )
                 InteractionEvents.response(survey, data.response, data.question)
             }
             EventMessageTypes.SURVEY_COMPLETE.value -> {
@@ -238,15 +251,16 @@ class SurveyView : DialogFragment() {
             authToken: String?,
             eventTraits: EventTraits?,
             surveyTextFont: String? = null,
-            buttonFont: String? = null
+            buttonFont: String? = null,
         ): SurveyView {
-            val bundle = Bundle().apply {
-                putParcelable(SURVEY, survey)
-                putString(AUTH_TOKEN, authToken)
-                putSerializable(EVENT_TRAITS, eventTraits)
-                putString(SURVEY_TEXT_FONT, surveyTextFont)
-                putString(BUTTON_FONT, buttonFont)
-            }
+            val bundle =
+                Bundle().apply {
+                    putParcelable(SURVEY, survey)
+                    putString(AUTH_TOKEN, authToken)
+                    putSerializable(EVENT_TRAITS, eventTraits)
+                    putString(SURVEY_TEXT_FONT, surveyTextFont)
+                    putString(BUTTON_FONT, buttonFont)
+                }
             return SurveyView().apply {
                 arguments = bundle
             }

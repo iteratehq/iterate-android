@@ -7,11 +7,11 @@ import com.google.gson.annotations.SerializedName
 data class TargetingContext(
     val frequency: Frequency?,
     @SerializedName("survey_id")
-    val surveyId: String?
+    val surveyId: String?,
 )
 
 @Keep
 enum class Frequency(val value: String) {
     @SerializedName("always")
-    ALWAYS("always")
+    ALWAYS("always"),
 }

@@ -11,7 +11,6 @@ import java.util.Calendar
 import java.util.Date
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,8 +59,8 @@ class MainActivity : AppCompatActivity() {
                 UserTraits(
                     "external_id" to EXTERNAL_ID,
                     "email" to EMAIL,
-                    "date_joined" to januaryFirst2023
-                )
+                    "date_joined" to januaryFirst2023,
+                ),
             )
         }
 
@@ -72,7 +71,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val API_KEY =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55X2lkIjoiNWRmZTM2OGEwOWI2ZWYwMDAxYjNlNjE4IiwiaWF0IjoxNTc2OTQxMTk0fQ.QBWr2goMwOngVhi6wY9sdFAKEvBGmn-JRDKstVMFh6M"
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55X2lkIjoiN" +
+                "WRmZTM2OGEwOWI2ZWYwMDAxYjNlNjE4IiwiaWF0IjoxNTc2OTQxMTk0fQ.QBW" +
+                "r2goMwOngVhi6wY9sdFAKEvBGmn-JRDKstVMFh6M"
         private const val EMAIL = "example@email.com"
         private const val EXTERNAL_ID = "user-123"
         private const val SURVEY_ID = "5efa0121a9fffa0001c70b8d"

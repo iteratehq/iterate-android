@@ -8,11 +8,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Translation(
     val language: String,
-    val items: Map<String, TranslationItem>?
+    val items: Map<String, TranslationItem>?,
 ) : Parcelable
 
 @Keep
 @Parcelize
 data class TranslationItem(
-    val text: String?
+    val text: String?,
 ) : Parcelable

@@ -5,5 +5,5 @@ import androidx.annotation.Keep
 @Keep
 data class ResponseEventMessageData(
     val question: Question?,
-    val response: Response?
+    val response: Response?,
 )
