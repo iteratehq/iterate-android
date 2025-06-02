@@ -2,8 +2,7 @@ package com.iteratehq.iterate.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -36,22 +35,13 @@ internal class DefaultIterateSharedPrefs(
     private val context: Context,
     useEncryptedSharedPreferences: Boolean = true,
 ) : IterateSharedPrefs {
+    private val isEncrypted = useEncryptedSharedPreferences && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+    private val cryptoManager = CryptoManager(isEncrypted)
     private val prefs: SharedPreferences by lazy {
-        if (useEncryptedSharedPreferences) {
-            val masterKey =
-                MasterKey.Builder(context)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
-            EncryptedSharedPreferences.create(
-                context,
-                ENCRYPTED_PREFS_FILE,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-            )
-        } else {
-            context.getSharedPreferences(PLAIN_PREFS_FILE, Context.MODE_PRIVATE)
-        }
+        context.getSharedPreferences(
+            if (isEncrypted) ENCRYPTED_PREFS_FILE else PLAIN_PREFS_FILE,
+            Context.MODE_PRIVATE,
+        )
     }
 
     override fun clear() {
@@ -61,33 +51,45 @@ internal class DefaultIterateSharedPrefs(
     }
 
     override fun getLastUpdated(): Long? {
-        return if (prefs.contains(LAST_UPDATED)) {
-            prefs.getLong(LAST_UPDATED, -1)
+        if (!prefs.contains(LAST_UPDATED)) {
+            return null
+        }
+        return if (isEncrypted) {
+            cryptoManager.decrypt(prefs.getString(LAST_UPDATED, null))?.toLong()
         } else {
-            null
+            prefs.getLong(LAST_UPDATED, -1)
         }
     }
 
     override fun getUserAuthToken(): String? {
-        return prefs.getString(USER_AUTH_TOKEN, null)
+        val value = prefs.getString(USER_AUTH_TOKEN, null)
+        return if (isEncrypted) cryptoManager.decrypt(value) else value
     }
 
     override fun getUserTraits(): UserTraits? {
-        val userTraitsJson = prefs.getString(USER_TRAITS, "")
+        val stored = prefs.getString(USER_TRAITS, null) ?: return null
+        val userTraitsJson = if (isEncrypted) cryptoManager.decrypt(stored) else stored
+            ?: return null
         val type = object : TypeToken<UserTraits?>() {}.type
-        val userTraits: UserTraits? = Gson().fromJson(userTraitsJson, type)
-        return userTraits
+        return Gson().fromJson(userTraitsJson, type)
     }
 
     override fun setLastUpdated(lastUpdated: Long) {
-        prefs.edit()
-            .putLong(LAST_UPDATED, lastUpdated)
-            .apply()
+        val value =
+            if (isEncrypted) cryptoManager.encrypt(lastUpdated.toString()) else lastUpdated.toString()
+        prefs.edit().apply {
+            if (isEncrypted) {
+                putString(LAST_UPDATED, value)
+            } else {
+                putLong(LAST_UPDATED, lastUpdated)
+            }
+        }.apply()
     }
 
     override fun setUserAuthToken(userAuthToken: String) {
+        val value = if (isEncrypted) cryptoManager.encrypt(userAuthToken) else userAuthToken
         prefs.edit()
-            .putString(USER_AUTH_TOKEN, userAuthToken)
+            .putString(USER_AUTH_TOKEN, value)
             .apply()
     }
 
@@ -98,8 +100,9 @@ internal class DefaultIterateSharedPrefs(
                 .create()
 
         val userTraitsJson = gson.toJson(userTraits)
+        val value = if (isEncrypted) cryptoManager.encrypt(userTraitsJson) else userTraitsJson
         prefs.edit()
-            .putString(USER_TRAITS, userTraitsJson)
+            .putString(USER_TRAITS, value)
             .apply()
     }
 
