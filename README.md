@@ -186,7 +186,9 @@ By default surveys are only shown once per person and user's can only see at mos
 
 ## Using Encrypted Storage
 
-By default we make use of EncryptedSharedPreferences to store the user's API key as well as a few other pieces of data (timestamp they last saw a survey, etc). There is a known rare bug in Android where certain devices will corrupt the master key, causing the following runtime exception to be thrown `java.security.KeyStoreException: the master key android-keystore://_androidx_security_master_key_ exists but is unusable`. More on the bug [here](https://github.com/google/tink/issues/535) and [here](https://issuetracker.google.com/issues/176215143). The solution is to use the unencrypted SharedPreferences instead of EncryptedSharedPreferences. We've decided to continue to use EncryptedSharedPreferences by default since the bug effects a very small number of devices and prefer to encrypt all data when possible, however if you wish to use the unencrypted SharedPreferences to avoid this crash you can do so by initializing Iterate with the `useEncryptedSharedPreferences = false` parameter as shown below.
+By default the SDK encrypts all persisted data using a key generated in the Android Keystore. AES/GCM encryption is used on devices running Android 6.0 (API 23) or higher. Devices running older versions or when `useEncryptedSharedPreferences` is set to `false` will fall back to storing values in plain `SharedPreferences`.
+
+You can disable encryption entirely by passing `useEncryptedSharedPreferences = false` when initializing the SDK:
 
 ```Kotlin
 Iterate.init(this, API_KEY, useEncryptedSharedPreferences = false)
