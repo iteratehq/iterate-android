@@ -3,11 +3,11 @@ package com.iteratehq.iterate.data.local
 import android.os.Build
 import android.util.Base64
 import androidx.annotation.RequiresApi
+import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-import java.security.KeyStore
 
 internal class CryptoManager(
     private val enabled: Boolean,
@@ -51,14 +51,15 @@ internal class CryptoManager(
         val existing = (ks.getEntry(keyAlias, null) as? KeyStore.SecretKeyEntry)?.secretKey
         if (existing != null) return existing
         val keyGenerator = KeyGenerator.getInstance("AES", "AndroidKeyStore")
-        val spec = android.security.keystore.KeyGenParameterSpec.Builder(
-            keyAlias,
-            android.security.keystore.KeyProperties.PURPOSE_ENCRYPT or android.security.keystore.KeyProperties.PURPOSE_DECRYPT,
-        )
-            .setBlockModes(android.security.keystore.KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(android.security.keystore.KeyProperties.ENCRYPTION_PADDING_NONE)
-            .setKeySize(256)
-            .build()
+        val spec =
+            android.security.keystore.KeyGenParameterSpec.Builder(
+                keyAlias,
+                android.security.keystore.KeyProperties.PURPOSE_ENCRYPT or android.security.keystore.KeyProperties.PURPOSE_DECRYPT,
+            )
+                .setBlockModes(android.security.keystore.KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(android.security.keystore.KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256)
+                .build()
         keyGenerator.init(spec)
         return keyGenerator.generateKey()
     }

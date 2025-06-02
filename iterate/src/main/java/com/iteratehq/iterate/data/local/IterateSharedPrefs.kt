@@ -68,8 +68,13 @@ internal class DefaultIterateSharedPrefs(
 
     override fun getUserTraits(): UserTraits? {
         val stored = prefs.getString(USER_TRAITS, null) ?: return null
-        val userTraitsJson = if (isEncrypted) cryptoManager.decrypt(stored) else stored
-            ?: return null
+        val userTraitsJson =
+            if (isEncrypted) {
+                cryptoManager.decrypt(stored)
+            } else {
+                stored
+                    ?: return null
+            }
         val type = object : TypeToken<UserTraits?>() {}.type
         return Gson().fromJson(userTraitsJson, type)
     }
