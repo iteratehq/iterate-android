@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 `iterate-android` adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.6.1](https://github.com/iteratehq/iterate-android/releases/tag/v1.6.1)
+
+Released 2025-06-01.
+
+**Added**
+
+- Added an encrypted preferences helper to mirror the use of EncryptedSharedPreferences
+
+**Removed**
+
+- Removed the depricated EncryptedSharedPreferences
+
 ## [1.6.0](https://github.com/iteratehq/iterate-android/releases/tag/v1.6.0)
 
 Released 2025-05-30.
