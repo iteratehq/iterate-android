@@ -24,9 +24,9 @@ import com.iteratehq.iterate.databinding.SurveyViewBinding
 import com.iteratehq.iterate.model.EventMessageTypes
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.InteractionEventSource
-import com.iteratehq.iterate.model.StringToAnyMap
 import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.ResponseEventMessageData
+import com.iteratehq.iterate.model.StringToAnyMap
 import com.iteratehq.iterate.model.Survey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,24 +83,25 @@ class SurveyView : DialogFragment() {
     private fun setupView() {
         val params = mutableListOf<String>()
         val authToken = arguments?.getString(AUTH_TOKEN)
-        
+
         // Safe handling of EventTraits deserialization to prevent ClassCastException
         val eventTraitsObj = arguments?.getSerializable(EVENT_TRAITS)
-        val eventTraits: EventTraits? = when (eventTraitsObj) {
-            is StringToAnyMap -> eventTraitsObj
-            is HashMap<*, *> -> {
-                // Convert HashMap to StringToAnyMap (happens after process death/restoration)
-                StringToAnyMap().apply {
-                    eventTraitsObj.forEach { (key, value) ->
-                        if (key is String && value != null) {
-                            this[key] = value
+        val eventTraits: EventTraits? =
+            when (eventTraitsObj) {
+                is StringToAnyMap -> eventTraitsObj
+                is HashMap<*, *> -> {
+                    // Convert HashMap to StringToAnyMap (happens after process death/restoration)
+                    StringToAnyMap().apply {
+                        eventTraitsObj.forEach { (key, value) ->
+                            if (key is String && value != null) {
+                                this[key] = value
+                            }
                         }
                     }
                 }
+                else -> null
             }
-            else -> null
-        }
-        
+
         val surveyTextFont = arguments?.getString(SURVEY_TEXT_FONT)
         val buttonFont = arguments?.getString(BUTTON_FONT)
 
