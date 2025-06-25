@@ -24,6 +24,7 @@ import com.iteratehq.iterate.databinding.SurveyViewBinding
 import com.iteratehq.iterate.model.EventMessageTypes
 import com.iteratehq.iterate.model.EventTraits
 import com.iteratehq.iterate.model.InteractionEventSource
+import com.iteratehq.iterate.model.StringToAnyMap
 import com.iteratehq.iterate.model.ProgressEventMessageData
 import com.iteratehq.iterate.model.ResponseEventMessageData
 import com.iteratehq.iterate.model.Survey
