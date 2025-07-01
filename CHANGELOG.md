@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.6.2](https://github.com/iteratehq/iterate-android/releases/tag/v1.6.2)
 
-Released TBD.
+Released 2025-07-01.
 
 **Fixed**
 
