@@ -13,7 +13,10 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -68,6 +71,7 @@ class SurveyView : DialogFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        setupInsets()
         setupView()
     }
 
@@ -215,6 +219,24 @@ class SurveyView : DialogFragment() {
             } else {
                 dismiss()
             }
+        }
+    }
+
+    private fun setupInsets() {
+        // Handle system bar insets for edge-to-edge display
+        // Apply top and bottom insets to avoid overlapping with status bar, navigation bar, and keyboard
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            // Use the larger of navigation bar or IME for bottom padding
+            val bottomInset = maxOf(systemBars.bottom, ime.bottom)
+
+            view.updatePadding(
+                top = systemBars.top,
+                bottom = bottomInset,
+            )
+            insets
         }
     }
 
