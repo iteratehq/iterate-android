@@ -18,11 +18,11 @@ apply from: "${rootDir}/scripts/publish-module.gradle"
 
 android {
     namespace = "com.iteratehq.iterate"
-    compileSdkVersion 31
+    compileSdkVersion 36
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 36
         buildConfigField "String", "VERSION_NAME", "\"$VERSION_NAME\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -52,29 +52,29 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.20'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.2.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     implementation "io.noties.markwon:core:4.6.2"
     implementation "io.noties.markwon:image:4.6.2"
     implementation 'com.caverock:androidsvg:1.4'
 
-    testImplementation 'androidx.test:core:1.4.0'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.1'
+    testImplementation 'androidx.test:core:1.6.1'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:5.1.0'
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0'
-    testImplementation 'org.mockito:mockito-core:3.11.2'
-    testImplementation 'org.robolectric:robolectric:4.11.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.robolectric:robolectric:4.15.1'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }
 
-task installGitHook(type: Copy) {
+tasks.register('installGitHook', Copy) {
     def suffix = "macos"
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         suffix = "windows"
@@ -91,10 +91,12 @@ task installGitHook(type: Copy) {
     fileMode 0775
 }
 
-tasks.getByPath(':app:preBuild').dependsOn installGitHook
+project(':app').tasks.named('preBuild').configure {
+    dependsOn installGitHook
+}
 
 // Log each test result on the terminal, e.g. PASSED, FAILED
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     testLogging {
         exceptionFormat "full"
         events "skipped", "passed", "failed"
