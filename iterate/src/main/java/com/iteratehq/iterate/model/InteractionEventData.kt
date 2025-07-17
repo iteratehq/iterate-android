@@ -38,7 +38,9 @@ data class ProgressEventMessageData(
 )
 
 @Keep
-enum class InteractionEventSource(val value: String) {
+enum class InteractionEventSource(
+    val value: String,
+) {
     PROMPT("prompt"),
     SURVEY("survey"),
 }

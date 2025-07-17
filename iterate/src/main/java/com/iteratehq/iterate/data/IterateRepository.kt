@@ -95,30 +95,20 @@ internal class DefaultIterateRepository
             companyAuthToken?.let { iterateInMemoryStore.setCompanyAuthToken(it) }
         }
 
-        override fun getCompanyAuthToken(): String? {
-            return iterateInMemoryStore.getCompanyAuthToken()
-        }
+        override fun getCompanyAuthToken(): String? = iterateInMemoryStore.getCompanyAuthToken()
 
         override fun getEventTraits(responseId: Long): EventTraits? {
             val eventTraitsMap = iterateInMemoryStore.getEventTraitsMap()
             return eventTraitsMap?.get(responseId)
         }
 
-        override fun getLastUpdated(): Long? {
-            return iterateSharedPrefs.getLastUpdated()
-        }
+        override fun getLastUpdated(): Long? = iterateSharedPrefs.getLastUpdated()
 
-        override fun getPreviewSurveyId(): String? {
-            return iterateInMemoryStore.getPreviewSurveyId()
-        }
+        override fun getPreviewSurveyId(): String? = iterateInMemoryStore.getPreviewSurveyId()
 
-        override fun getUserAuthToken(): String? {
-            return iterateSharedPrefs.getUserAuthToken()
-        }
+        override fun getUserAuthToken(): String? = iterateSharedPrefs.getUserAuthToken()
 
-        override fun getUserTraits(): UserTraits? {
-            return iterateSharedPrefs.getUserTraits()
-        }
+        override fun getUserTraits(): UserTraits? = iterateSharedPrefs.getUserTraits()
 
         override fun setCompanyAuthToken(companyAuthToken: String) {
             iterateInMemoryStore.setCompanyAuthToken(companyAuthToken)

@@ -25,7 +25,9 @@ internal data class Trigger(
 )
 
 @Keep
-internal enum class TriggerType(val value: String) {
+internal enum class TriggerType(
+    val value: String,
+) {
     @SerializedName("exit")
     EXIT("exit"),
 

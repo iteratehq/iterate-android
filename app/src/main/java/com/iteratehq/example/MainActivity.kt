@@ -20,15 +20,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Enable edge-to-edge and set status bar icons to dark
         enableEdgeToEdge()
-        WindowCompat.getInsetsController(window, window.decorView)
+        WindowCompat
+            .getInsetsController(window, window.decorView)
             .isAppearanceLightStatusBars = true
-        
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
         // Handle system bar insets
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -36,11 +37,11 @@ class MainActivity : AppCompatActivity() {
                 left = systemBars.left,
                 top = systemBars.top,
                 right = systemBars.right,
-                bottom = systemBars.bottom
+                bottom = systemBars.bottom,
             )
             insets
         }
-        
+
         setupButtonHandlers()
 
         Iterate.init(this, API_KEY, null, "Merriweather-Regular.ttf", "WorkSans-VariableFont_wght.ttf")

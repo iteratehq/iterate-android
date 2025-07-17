@@ -88,7 +88,8 @@ class PromptView : BottomSheetDialogFragment() {
         val surveyTextFont = arguments?.getString(SURVEY_TEXT_FONT)
         val buttonFont = arguments?.getString(BUTTON_FONT)
         val markwon =
-            Markwon.builder(requireContext())
+            Markwon
+                .builder(requireContext())
                 .usePlugin(ImagesPlugin.create())
                 .usePlugin(
                     object : AbstractMarkwonPlugin() {

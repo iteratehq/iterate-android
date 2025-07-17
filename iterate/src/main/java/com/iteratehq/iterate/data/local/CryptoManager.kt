@@ -52,11 +52,11 @@ internal class CryptoManager(
         if (existing != null) return existing
         val keyGenerator = KeyGenerator.getInstance("AES", "AndroidKeyStore")
         val spec =
-            android.security.keystore.KeyGenParameterSpec.Builder(
-                keyAlias,
-                android.security.keystore.KeyProperties.PURPOSE_ENCRYPT or android.security.keystore.KeyProperties.PURPOSE_DECRYPT,
-            )
-                .setBlockModes(android.security.keystore.KeyProperties.BLOCK_MODE_GCM)
+            android.security.keystore.KeyGenParameterSpec
+                .Builder(
+                    keyAlias,
+                    android.security.keystore.KeyProperties.PURPOSE_ENCRYPT or android.security.keystore.KeyProperties.PURPOSE_DECRYPT,
+                ).setBlockModes(android.security.keystore.KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(android.security.keystore.KeyProperties.ENCRYPTION_PADDING_NONE)
                 .setKeySize(256)
                 .build()

@@ -45,7 +45,8 @@ internal class DefaultIterateSharedPrefs(
     }
 
     override fun clear() {
-        prefs.edit()
+        prefs
+            .edit()
             .clear()
             .apply()
     }
@@ -82,18 +83,21 @@ internal class DefaultIterateSharedPrefs(
     override fun setLastUpdated(lastUpdated: Long) {
         val value =
             if (isEncrypted) cryptoManager.encrypt(lastUpdated.toString()) else lastUpdated.toString()
-        prefs.edit().apply {
-            if (isEncrypted) {
-                putString(LAST_UPDATED, value)
-            } else {
-                putLong(LAST_UPDATED, lastUpdated)
-            }
-        }.apply()
+        prefs
+            .edit()
+            .apply {
+                if (isEncrypted) {
+                    putString(LAST_UPDATED, value)
+                } else {
+                    putLong(LAST_UPDATED, lastUpdated)
+                }
+            }.apply()
     }
 
     override fun setUserAuthToken(userAuthToken: String) {
         val value = if (isEncrypted) cryptoManager.encrypt(userAuthToken) else userAuthToken
-        prefs.edit()
+        prefs
+            .edit()
             .putString(USER_AUTH_TOKEN, value)
             .apply()
     }
@@ -106,7 +110,8 @@ internal class DefaultIterateSharedPrefs(
 
         val userTraitsJson = gson.toJson(userTraits)
         val value = if (isEncrypted) cryptoManager.encrypt(userTraitsJson) else userTraitsJson
-        prefs.edit()
+        prefs
+            .edit()
             .putString(USER_TRAITS, value)
             .apply()
     }
@@ -125,8 +130,8 @@ internal class DateSerializer : JsonSerializer<Date> {
         src: Date?,
         typeOfSrc: Type?,
         context: JsonSerializationContext?,
-    ): JsonElement {
-        return if (src == null) {
+    ): JsonElement =
+        if (src == null) {
             JsonNull.INSTANCE
         } else {
             JsonObject().apply {
@@ -134,5 +139,4 @@ internal class DateSerializer : JsonSerializer<Date> {
                 addProperty("value", src.getTime() / 1000)
             }
         }
-    }
 }

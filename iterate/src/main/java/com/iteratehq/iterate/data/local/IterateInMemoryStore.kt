@@ -35,21 +35,13 @@ internal class DefaultIterateInMemoryStore : IterateInMemoryStore {
         previewSurveyId = null
     }
 
-    override fun getCompanyAuthToken(): String? {
-        return companyAuthToken
-    }
+    override fun getCompanyAuthToken(): String? = companyAuthToken
 
-    override fun getDisplayedSurveyResponseId(): Long? {
-        return displayedSurveyResponseId
-    }
+    override fun getDisplayedSurveyResponseId(): Long? = displayedSurveyResponseId
 
-    override fun getEventTraitsMap(): Map<Long, EventTraits>? {
-        return eventTraitsMap
-    }
+    override fun getEventTraitsMap(): Map<Long, EventTraits>? = eventTraitsMap
 
-    override fun getPreviewSurveyId(): String? {
-        return previewSurveyId
-    }
+    override fun getPreviewSurveyId(): String? = previewSurveyId
 
     override fun setCompanyAuthToken(companyAuthToken: String?) {
         this.companyAuthToken = companyAuthToken
