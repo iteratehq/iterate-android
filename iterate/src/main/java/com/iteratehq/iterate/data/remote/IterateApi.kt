@@ -74,8 +74,8 @@ internal class DefaultIterateApi(
         path: String,
         method: Method,
         body: T,
-    ): ApiResponse<R> {
-        return withContext(workContext) {
+    ): ApiResponse<R> =
+        withContext(workContext) {
             var urlConnection: HttpURLConnection? = null
             try {
                 val url = URL("$apiHost/api/v1$path")
@@ -117,7 +117,6 @@ internal class DefaultIterateApi(
                 urlConnection?.disconnect()
             }
         }
-    }
 
     /**
      * Execute the given [apiCall] function asynchronously and return the result through a [callback].
@@ -167,7 +166,9 @@ internal class DefaultIterateApi(
     }
 }
 
-internal enum class Method(val value: String) {
+internal enum class Method(
+    val value: String,
+) {
     GET("GET"),
     POST("POST"),
 }

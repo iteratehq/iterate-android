@@ -16,7 +16,9 @@ data class EmbedContext(
 )
 
 @Keep
-enum class EmbedType(val value: String) {
+enum class EmbedType(
+    val value: String,
+) {
     @SerializedName("mobile")
     MOBILE("mobile"),
 }

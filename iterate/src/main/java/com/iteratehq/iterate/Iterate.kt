@@ -447,11 +447,10 @@ object Iterate {
         return null
     }
 
-    private fun canShowFragment(fragmentManager: FragmentManager): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    private fun canShowFragment(fragmentManager: FragmentManager): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             !fragmentManager.isDestroyed && !fragmentManager.isStateSaved
         } else {
             !fragmentManager.isDestroyed
         }
-    }
 }

@@ -11,7 +11,9 @@ data class TriggerContext(
 )
 
 @Keep
-enum class TriggerContextType(val value: String) {
+enum class TriggerContextType(
+    val value: String,
+) {
     @SerializedName("manual")
     MANUAL("manual"),
 }

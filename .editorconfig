@@ -1,0 +1,5 @@
+root = true
+
+[*.{kt,kts}]
+# Disable parameter-list-wrapping rule as it causes a conflict between formatting and checking
+ktlint_standard_parameter-list-wrapping = disabled
