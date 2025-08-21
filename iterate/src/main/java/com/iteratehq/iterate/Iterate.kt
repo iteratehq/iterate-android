@@ -52,6 +52,7 @@ object Iterate {
      * @param surveyTextFontAssetPath Optional path to a font file relative to the assets folder to use for question prompts and other survey text
      * @param buttonFontAssetPath Optional path to a font file relative to the assets folder to use for survey interface buttons
      * @param useEncryptedSharedPreferences Option to use EncryptedSharedPreferences, default to true
+     * @param onComplete Optional callback to be invoked when initialization is complete
      */
     @JvmStatic
     @JvmOverloads
@@ -62,6 +63,7 @@ object Iterate {
         surveyTextFontAssetPath: String? = null,
         buttonFontAssetPath: String? = null,
         useEncryptedSharedPreferences: Boolean = true,
+        onComplete: (() -> Unit)? = null,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             this@Iterate.iterateRepository =
@@ -75,6 +77,7 @@ object Iterate {
             this@Iterate.surveyTextFontAssetPath = surveyTextFontAssetPath
             this@Iterate.buttonFontAssetPath = buttonFontAssetPath
             initAuthToken(apiKey)
+            onComplete?.invoke()
         }
     }
 

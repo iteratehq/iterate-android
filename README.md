@@ -52,7 +52,9 @@ class IterateApp : Application() {
 
     override fun onCreate() {
         // ...
-        Iterate.init(this, API_KEY)
+        Iterate.init(this, API_KEY) {
+            // You can now safely call other Iterate methods
+        }
     }
 }
 ```
