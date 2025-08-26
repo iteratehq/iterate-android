@@ -44,7 +44,14 @@ class MainActivity : AppCompatActivity() {
 
         setupButtonHandlers()
 
-        Iterate.init(this, API_KEY, null, "Merriweather-Regular.ttf", "WorkSans-VariableFont_wght.ttf")
+        Iterate.init(this, API_KEY, null, "Merriweather-Regular.ttf", "WorkSans-VariableFont_wght.ttf") {
+            Iterate.identify(
+                UserTraits(
+                    "external_id" to EXTERNAL_ID,
+                    "email" to EMAIL,
+                ),
+            )
+        }
 
         Iterate.onResponse { response, question, survey ->
             Log.d("onResponseCallback", "$response $question $survey")
