@@ -1,0 +1,32 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/android:2026.02
+    resource_class: large
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}-{{ checksum "iterate/build.gradle" }}
+            - gradle-
+      - run:
+          name: Build
+          command: ./gradlew build
+      - run:
+          name: Run tests
+          command: ./gradlew test
+      - run:
+          name: Lint check
+          command: ./gradlew ktlintCheck
+      - save_cache:
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "iterate/build.gradle" }}
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+
+workflows:
+  build-and-test:
+    jobs:
+      - build
