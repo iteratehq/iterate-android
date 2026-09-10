@@ -199,3 +199,7 @@ Iterate.init(this, API_KEY, useEncryptedSharedPreferences = false)
 ## Troubleshooting
 
 If you have any issues you can head over to our [help center](https://help.iteratehq.com) to search for an answer or chat with our support team.
+
+## Architecture
+
+For a description of the delivery model, event flow, callbacks, targeting architecture, and how responses reach connected integrations, see [ARCHITECTURE.md](ARCHITECTURE.md).
